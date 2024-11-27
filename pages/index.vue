@@ -2,8 +2,13 @@
 
 <template>
   <div>
-    Page: index
+    <h1>Page: index</h1>
+    <div class="title">Page: index</div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss">
+h1 {
+  color: $primary;
+}
+</style>
