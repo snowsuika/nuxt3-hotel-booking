@@ -1,5 +1,5 @@
 <script setup>
-// import 'bootstrap/js/dist/collapse';
+import 'bootstrap/js/dist/collapse';
 </script>
 
 <template>
@@ -28,14 +28,14 @@
             aria-expanded="false"
             aria-label="Toggle navigation"
           >
-            <!-- <Icon
+            <Icon
               class="fs-1"
-              icon="mdi:close"
+              name="mdi:close"
             />
             <Icon
               class="fs-5"
-              icon="mdi:menu"
-            /> -->
+              name="mdi:menu"
+            />
           </button>
           <div
             id="navbar"
@@ -55,10 +55,10 @@
                   to="/"
                   class="nav-link d-flex gap-2 p-4 text-neutral-0"
                 >
-                  <!-- <Icon
+                  <Icon
                     class="fs-5"
-                    icon="mdi:account-circle-outline"
-                  /> -->
+                    name="mdi:account-circle-outline"
+                  />
                   Jessica
                 </NuxtLink>
               </li>

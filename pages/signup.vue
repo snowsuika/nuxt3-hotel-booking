@@ -20,14 +20,10 @@ const isEmailAndPasswordValid = ref(false);
       <div class="d-flex align-items-center py-4 gap-2">
         <div class="d-flex flex-column align-items-center gap-1 text-neutral-0">
           <span
-            :class="{'d-none': isEmailAndPasswordValid}"
+            :class="{ 'd-none': isEmailAndPasswordValid }"
             class="step p-2 bg-primary-100 rounded-circle"
           >1</span>
-          <!-- <Icon
-            :class="{'d-none': !isEmailAndPasswordValid}"
-            class="p-2 fs-3 bg-primary-100 rounded-circle"
-            icon="material-symbols:check"
-          /> -->
+          <Icon :class="{ 'd-none': !isEmailAndPasswordValid }" />
           <p class="mb-0 fs-8 fs-md-7 fw-bold">
             輸入信箱及密碼
           </p>
@@ -56,7 +52,7 @@ const isEmailAndPasswordValid = ref(false);
 
     <div class="mb-4">
       <form
-        :class="{'d-none': isEmailAndPasswordValid}"
+        :class="{ 'd-none': isEmailAndPasswordValid }"
         class="mb-4"
       >
         <div class="mb-4 fs-8 fs-md-7">
@@ -110,7 +106,7 @@ const isEmailAndPasswordValid = ref(false);
         </button>
       </form>
       <form
-        :class="{'d-none': !isEmailAndPasswordValid}"
+        :class="{ 'd-none': !isEmailAndPasswordValid }"
         class="mb-4"
       >
         <div class="mb-4 fs-8 fs-md-7">
@@ -148,9 +144,7 @@ const isEmailAndPasswordValid = ref(false);
           >
             生日
           </label>
-          <div
-            class="d-flex gap-2"
-          >
+          <div class="d-flex gap-2">
             <select
               id="birth"
               class="form-select p-4 text-neutral-80 fw-medium rounded-3"
@@ -163,9 +157,7 @@ const isEmailAndPasswordValid = ref(false);
                 {{ year + 1958 }} 年
               </option>
             </select>
-            <select
-              class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-            >
+            <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
               <option
                 v-for="month in 12"
                 :key="month"
@@ -174,9 +166,7 @@ const isEmailAndPasswordValid = ref(false);
                 {{ month }} 月
               </option>
             </select>
-            <select
-              class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-            >
+            <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
               <option
                 v-for="day in 30"
                 :key="day"
@@ -195,12 +185,8 @@ const isEmailAndPasswordValid = ref(false);
             地址
           </label>
           <div>
-            <div
-              class="d-flex gap-2 mb-2"
-            >
-              <select
-                class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-              >
+            <div class="d-flex gap-2 mb-2">
+              <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
                 <option value="臺北市">
                   臺北市
                 </option>
@@ -214,9 +200,7 @@ const isEmailAndPasswordValid = ref(false);
                   高雄市
                 </option>
               </select>
-              <select
-                class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-              >
+              <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
                 <option value="前金區">
                   前金區
                 </option>

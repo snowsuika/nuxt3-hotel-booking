@@ -3,7 +3,7 @@ definePageMeta({
   layout: 'auth',
 })
 </script>
-NuxtLink
+
 
 <template>
   <div class="px-5 px-md-0">
