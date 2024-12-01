@@ -1,5 +1,5 @@
 <script setup>
-import 'bootstrap/js/dist/collapse';
+// import 'bootstrap/js/dist/collapse';
 </script>
 
 <template>
@@ -14,7 +14,7 @@ import 'bootstrap/js/dist/collapse';
             to="/"
           >
             <img
-              src="@/public/images/logo-white.svg"
+              src="@/assets/images/logo-white.svg"
               alt="logo"
               class="logo img-fluid"
             >
@@ -87,19 +87,19 @@ import 'bootstrap/js/dist/collapse';
       <img
         class="d-none d-md-block position-relative z-1 min-vh-100 object-fit-cover"
         style="max-width: 50%;"
-        src="@/public/images/login-hero.png"
+        src="@/assets/images/login-hero.png"
         alt="login-hero"
       >
 
       <div class="d-flex flex-column justify-content-center align-items-center flex-grow-1 pt-18 pt-md-0">
         <picture class="w-100">
           <source
-            srcset="@/public/images/deco-line-group-horizontal.svg"
+            srcset="@/assets/images/deco-line-group-horizontal.svg"
             media="(min-width: 576px)"
           >
           <img
             class="deco-line-group"
-            src="@/public/images/deco-line-group-horizontal-sm.svg"
+            src="@/assets/images/deco-line-group-horizontal-sm.svg"
             alt="deco-line-group"
           >
         </picture>

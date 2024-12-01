@@ -1,14 +1,10 @@
 <script setup>
-import Header from '@/components/layouts/Header.vue';
-import Footer from '@/components/layouts/Footer.vue';
+import AppHeader from '@/components/layouts/AppHeader.vue';
+import AppFooter from '@/components/layouts/AppFooter.vue';
 </script>
 
 <template>
-  <Header />
+  <AppHeader />
   <slot />
-  <Footer />
+  <AppFooter />
 </template>
-
-<style lang="scss" scoped>
-
-</style>

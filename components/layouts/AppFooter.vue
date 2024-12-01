@@ -9,7 +9,7 @@
         <div>
           <img
             class="mb-10"
-            src="@/public/images/logo-white.svg"
+            src="@/assets/images/logo-white.svg"
             alt="logo"
           >
           <div class="d-flex align-items-center gap-4">

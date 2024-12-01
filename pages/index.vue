@@ -1,92 +1,29 @@
 <script setup>
-// import { Swiper, SwiperSlide } from 'swiper/vue';
-// import { Autoplay, Navigation, Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 
-// import 'swiper/css';
-// import 'swiper/css/navigation';
-// import 'swiper/css/pagination';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
-// const modules = ref([Autoplay, Navigation, Pagination]);
-
+const modules = ref([Autoplay, Navigation, Pagination]);
 
 const roomSwiper = ref(null);
 
-// const slidePrev = () => {
-//   roomSwiper.value.$el.swiper.slidePrev();
-// }
+const slidePrev = () => {
+  roomSwiper.value.$el.swiper.slidePrev();
+};
 
-// const slideNext = () => {
-//   roomSwiper.value.$el.swiper.slideNext();
-// }
+const slideNext = () => {
+  roomSwiper.value.$el.swiper.slideNext();
+};
 </script>
 
 <template>
-<div>
-    <header class="position-fixed top-0 z-3 w-100">
-      <nav class="navbar navbar-expand-md p-0 px-3 py-4 px-md-20 py-md-6">
-        <div class="container-fluid justify-content-between p-0">
-          <NuxtLink class="navbar-brand p-0" to="/">
-            <img src="@/public/images/logo-white.svg" alt="logo" class="logo img-fluid" />
-          </NuxtLink>
-          <button
-            class="navbar-toggler collapsed p-2 text-white border-0 shadow-none"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbar"
-            aria-controls="navbar"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <!-- FIXME:  -->
-            <Icon
-            class="fs-1"
-            name="mdi:close"
-          />
-          <Icon
-            class="fs-5"
-            name="mdi:menu"
-          />
-
-          </button>
-          <div id="navbar" class="collapse navbar-collapse">
-            <ul class="navbar-nav gap-4 ms-auto fw-bold">
-              <li class="nav-item">
-                <NuxtLink to="/rooms" class="nav-link p-4 text-neutral-0"> 客房旅宿 </NuxtLink>
-              </li>
-              <li class="d-none d-md-block nav-item">
-                <div class="btn-group">
-                  <button type="button" class="nav-link d-flex gap-2 p-4 text-neutral-0" data-bs-toggle="dropdown">
-                    <Icon
-                    class="fs-5"
-                    name="mdi:account-circle-outline"
-                  />
-                    Jessica
-                  </button>
-                  <ul class="dropdown-menu py-3 overflow-hidden" style="right: 0; left: auto; border-radius: 20px">
-                    <li>
-                      <a class="dropdown-item px-6 py-4" href="#">我的帳戶</a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item px-6 py-4" href="#">登出</a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-              <li class="d-md-none nav-item">
-                <NuxtLink to="/" class="nav-link p-4 text-neutral-0"> 會員登入 </NuxtLink>
-              </li>
-              <li class="nav-item">
-                <NuxtLink to="/rooms" class="btn btn-primary-100 px-8 py-4 text-white fw-bold border-0 rounded-3">
-                  立即訂房
-                </NuxtLink>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-    </header>
+  <div>
     <main class="overflow-hidden">
       <section class="hero position-relative">
+
         <swiper
           :modules="modules"
           :slides-per-view="1"
@@ -98,8 +35,8 @@ const roomSwiper = ref(null);
         >
           <swiper-slide v-for="(num, index) in 5" :key="index">
             <picture>
-              <source srcset="@/public/images/home-hero.png" media="(min-width:576px)" />
-              <img class="hero-img" src="@/public/images/home-hero-sm.png" alt="hero banner" />
+              <source srcset="@/assets/images/home-hero.png" media="(min-width:576px)" />
+              <img class="hero-img" src="@/assets/images/home-hero-sm.png" alt="hero banner" />
             </picture>
           </swiper-slide>
         </swiper>
@@ -143,9 +80,9 @@ const roomSwiper = ref(null);
               <div class="card bg-transparent border-0">
                 <div class="d-flex flex-column flex-md-row align-items-center gap-6">
                   <picture>
-                    <source srcset="@/public/images/home-news-1.png" media="(min-width: 576px)" />
+                    <source srcset="@/assets/images/home-news-1.png" media="(min-width: 576px)" />
                     <img
-                      src="@/public/images/home-news-sm-1.png"
+                      src="@/assets/images/home-news-sm-1.png"
                       class="w-100 rounded-3"
                       alt="可看見海景及泳池的套房"
                     />
@@ -162,9 +99,9 @@ const roomSwiper = ref(null);
               <div class="card bg-transparent border-0">
                 <div class="d-flex flex-column flex-md-row align-items-center gap-6">
                   <picture>
-                    <source srcset="@/public/images/home-news-2.png" media="(min-width: 576px)" />
+                    <source srcset="@/assets/images/home-news-2.png" media="(min-width: 576px)" />
                     <img
-                      src="@/public/images/home-news-sm-2.png"
+                      src="@/assets/images/home-news-sm-2.png"
                       class="w-100 rounded-3"
                       alt="在雙人床上的兩顆灰色枕頭"
                     />
@@ -181,9 +118,9 @@ const roomSwiper = ref(null);
               <div class="card bg-transparent border-0">
                 <div class="d-flex flex-column flex-md-row align-items-center gap-6">
                   <picture>
-                    <source srcset="@/public/images/home-news-3.png" media="(min-width: 576px)" />
+                    <source srcset="@/assets/images/home-news-3.png" media="(min-width: 576px)" />
                     <img
-                      src="@/public/images/home-news-sm-3.png"
+                      src="@/assets/images/home-news-sm-3.png"
                       class="w-100 rounded-3"
                       alt="坐在沙發上的聖誕麋鹿玩偶"
                     />
@@ -247,8 +184,8 @@ const roomSwiper = ref(null);
           >
             <swiper-slide v-for="(num, index) in 5" :key="index">
               <picture>
-                <source srcset="@/public/images/home-room-1.png" media="(min-width:768px)" />
-                <img class="w-100" src="@/public/images/home-room-sm-1.png" alt="room-a" />
+                <source srcset="@/assets/images/home-room-1.png" media="(min-width:768px)" />
+                <img class="w-100" src="@/assets/images/home-room-sm-1.png" alt="room-a" />
               </picture>
             </swiper-slide>
           </swiper>
@@ -273,7 +210,7 @@ const roomSwiper = ref(null);
                 @click="slidePrev"
               >
                 <Icon
-                name="mdi:arrow-left"
+                  name="mdi:arrow-left"
                   class="bi m-4"
                   style="font-size: 1.5rem; --bs-icon-link-transform: translateX(-0.25em)"
                 />
@@ -300,8 +237,8 @@ const roomSwiper = ref(null);
             <div class="col-10 col-md-6 col-xl-4">
               <div class="card position-relative border-0 rounded-3">
                 <picture>
-                  <source srcset="@/public/images/home-food-1.png" media="(min-width: 576px)" />
-                  <img class="w-100 rounded-3" src="@/public/images/home-food-sm-1.png" alt="海霸" />
+                  <source srcset="@/assets/images/home-food-1.png" media="(min-width: 576px)" />
+                  <img class="w-100 rounded-3" src="@/assets/images/home-food-sm-1.png" alt="海霸" />
                 </picture>
                 <div class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0">
                   <div class="d-flex justify-content-between align-items-center mb-4 mb-md-6">
@@ -321,8 +258,8 @@ const roomSwiper = ref(null);
             <div class="col-10 col-md-6 col-xl-4">
               <div class="card position-relative border-0 rounded-3">
                 <picture>
-                  <source srcset="@/public/images/home-food-2.png" media="(min-width: 576px)" />
-                  <img class="w-100 rounded-3" src="@/public/images/home-food-sm-2.png" alt="日食" />
+                  <source srcset="@/assets/images/home-food-2.png" media="(min-width: 576px)" />
+                  <img class="w-100 rounded-3" src="@/assets/images/home-food-sm-2.png" alt="日食" />
                 </picture>
                 <div class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0">
                   <div class="d-flex justify-content-between align-items-center mb-4 mb-md-6">
@@ -342,8 +279,8 @@ const roomSwiper = ref(null);
             <div class="col-10 col-md-6 col-xl-4">
               <div class="card position-relative border-0 rounded-3">
                 <picture>
-                  <source srcset="@/public/images/home-food-3.png" media="(min-width: 576px)" />
-                  <img class="w-100 rounded-3" src="@/public/images/home-food-sm-3.png" alt="山臻" />
+                  <source srcset="@/assets/images/home-food-3.png" media="(min-width: 576px)" />
+                  <img class="w-100 rounded-3" src="@/assets/images/home-food-sm-3.png" alt="山臻" />
                 </picture>
                 <div class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0">
                   <div class="d-flex justify-content-between align-items-center mb-4 mb-md-6">
@@ -363,8 +300,8 @@ const roomSwiper = ref(null);
             <div class="col-10 col-md-6 col-xl-4">
               <div class="card position-relative border-0 rounded-3">
                 <picture>
-                  <source srcset="@/public/images/home-food-4.png" media="(min-width: 576px)" />
-                  <img class="w-100 rounded-3" src="@/public/images/home-food-sm-4.png" alt="月永" />
+                  <source srcset="@/assets/images/home-food-4.png" media="(min-width: 576px)" />
+                  <img class="w-100 rounded-3" src="@/assets/images/home-food-sm-4.png" alt="月永" />
                 </picture>
                 <div class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0">
                   <div class="d-flex justify-content-between align-items-center mb-4 mb-md-6">
@@ -384,8 +321,8 @@ const roomSwiper = ref(null);
             <div class="col-10 col-md-6 col-xl-4">
               <div class="card position-relative border-0 rounded-3">
                 <picture>
-                  <source srcset="@/public/images/home-food-5.png" media="(min-width: 576px)" />
-                  <img class="w-100 rounded-3" src="@/public/images/home-food-sm-5.png" alt="天潮" />
+                  <source srcset="@/assets/images/home-food-5.png" media="(min-width: 576px)" />
+                  <img class="w-100 rounded-3" src="@/assets/images/home-food-sm-5.png" alt="天潮" />
                 </picture>
                 <div class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0">
                   <div class="d-flex justify-content-between align-items-center mb-4 mb-md-6">
@@ -415,8 +352,8 @@ const roomSwiper = ref(null);
             <div class="col-12 mb-md-10">
               <p class="text-neutral-40 fw-bold"> 台灣高雄市新興區六角路123號 </p>
               <picture>
-                <source srcset="@/public/images/home-map.png" media="(min-width: 576px)" />
-                <img class="w-100" src="@/public/images/home-map-sm.png" alt="描述地圖中酒店所在的位置" />
+                <source srcset="@/assets/images/home-map.png" media="(min-width: 576px)" />
+                <img class="w-100" src="@/assets/images/home-map-sm.png" alt="描述地圖中酒店所在的位置" />
               </picture>
             </div>
             <div class="col-12 col-md-4 text-neutral-0">
@@ -443,8 +380,8 @@ const roomSwiper = ref(null);
           </div>
         </div>
         <picture>
-          <source srcset="@/public/images/deco-line-group-horizontal-full.svg" media="(min-width:576px)" />
-          <img class="w-100" src="@/public/images/deco-line-group-horizontal-sm.svg" alt="deco-line-group" />
+          <source srcset="@/assets/images/deco-line-group-horizontal-full.svg" media="(min-width:576px)" />
+          <img class="w-100" src="@/assets/images/deco-line-group-horizontal-sm.svg" alt="deco-line-group" />
         </picture>
       </section>
     </main>
@@ -584,7 +521,7 @@ section .btn {
 }
 
 .news .container::before {
-  background-image: url('@/public/images/deco-dot-group.svg');
+  background-image: url('@/assets/images/deco-dot-group.svg');
   content: '';
   display: block;
   position: absolute;
@@ -594,7 +531,7 @@ section .btn {
   height: 200px;
 
   @include media-breakpoint-down(md) {
-    background-image: url('@/public/images/deco-dot-group-sm.svg');
+    background-image: url('@/assets/images/deco-dot-group-sm.svg');
     width: 100px;
     height: 100px;
     top: -40px;
@@ -603,7 +540,7 @@ section .btn {
 }
 
 .news .container::after {
-  background-image: url('@/public/images/deco-dot-group.svg');
+  background-image: url('@/assets/images/deco-dot-group.svg');
   content: '';
   display: block;
   position: absolute;
@@ -613,7 +550,7 @@ section .btn {
   height: 200px;
 
   @include media-breakpoint-down(md) {
-    background-image: url('@/public/images/deco-dot-group-sm.svg');
+    background-image: url('@/assets/images/deco-dot-group-sm.svg');
     width: 100px;
     height: 100px;
     bottom: -140px;
@@ -622,7 +559,7 @@ section .btn {
 }
 
 .about {
-  background-image: url('@/public/images/home-about.png');
+  background-image: url('@/assets/images/home-about.png');
   height: 992px;
   background-position-y: 120px;
   background-repeat: no-repeat;
@@ -667,11 +604,11 @@ section .btn {
   content: '';
   width: 375px;
   height: 84px;
-  background-image: url('@/public/images/deco-line-group-horizontal-sm.svg');
+  background-image: url('@/assets/images/deco-line-group-horizontal-sm.svg');
   background-repeat: no-repeat;
 
   @include media-breakpoint-up(md) {
-    background-image: url('@/public/images/deco-line-group-horizontal.svg');
+    background-image: url('@/assets/images/deco-line-group-horizontal.svg');
     width: 1060px;
     height: 187px;
     top: -50px;
@@ -703,11 +640,11 @@ section .btn {
   content: '';
   width: 375px;
   height: 132px;
-  background-image: url('@/public/images/deco-wave-bg-sm.svg');
+  background-image: url('@/assets/images/deco-wave-bg-sm.svg');
   background-repeat: no-repeat;
 
   @include media-breakpoint-up(md) {
-    background-image: url('@/public/images/deco-wave-bg.svg');
+    background-image: url('@/assets/images/deco-wave-bg.svg');
     width: 1920px;
     height: 86%;
     bottom: 0;
@@ -759,7 +696,7 @@ section .btn {
     content: '';
     width: 200px;
     height: 200px;
-    background-image: url('../public/images/deco-dot-group.svg');
+    background-image: url('../assets/images/deco-dot-group.svg');
   }
 }
 
@@ -771,7 +708,7 @@ section .btn {
     content: '';
     width: 187px;
     height: 1068px;
-    background-image: url('@/public/images/deco-line-group-vertical.svg');
+    background-image: url('@/assets/images/deco-line-group-vertical.svg');
   }
 }
 
