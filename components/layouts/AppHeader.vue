@@ -1,4 +1,7 @@
 <script setup>
+// import 'bootstrap/js/dist/collapse';
+// import 'bootstrap/js/dist/dropdown';
+
 const route = useRoute();
 const transparentBgRoute = ['index', 'rooms'];
 
@@ -55,7 +58,7 @@ onUnmounted(() => {
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="navbar-nav gap-4 ms-auto fw-bold">
             <li class="nav-item">
-              <NuxtLink :to="{ name: 'rooms' }" class="nav-link p-4 text-neutral-0"> 客房旅宿 </NuxtLink>
+              <NuxtLink to="/rooms" class="nav-link p-4 text-neutral-0"> 客房旅宿 </NuxtLink>
             </li>
             <li class="d-none d-md-block nav-item">
               <div class="btn-group">
@@ -80,7 +83,7 @@ onUnmounted(() => {
               <NuxtLink to="/" class="nav-link p-4 text-neutral-0"> 會員登入 </NuxtLink>
             </li>
             <li class="nav-item">
-              <NuxtLink :to="{name: 'rooms'}" class="btn btn-primary-100 px-8 py-4 text-white fw-bold border-0 rounded-3">
+              <NuxtLink to="/rooms" class="btn btn-primary-100 px-8 py-4 text-white fw-bold border-0 rounded-3">
                 立即訂房
               </NuxtLink>
             </li>
