@@ -1,14 +1,13 @@
 <script setup>
-// FIXME: 修正 datePickerModal
-// import DatePickerModal from '@/components/rooms/DatePickerModal.vue';
+import DatePickerModal from '@/components/rooms/DatePickerModal.vue';
 
-// const datePickerModal = ref(null);
+const datePickerModal = ref(null);
 
-// const openModal = () => {
-//   datePickerModal.value.openModal();
-// };
+const openModal = () => {
+  datePickerModal.value.openModal();
+};
 
-const demoRoomId = 'a'
+const demoRoomId = 'a';
 
 const MAX_BOOKING_PEOPLE = 10;
 const bookingPeople = ref(1);
@@ -556,13 +555,13 @@ const handleDateChange = (bookingInfo) => {
         </template>
       </div>
     </section>
-
-    <!-- FIXME: -->
-    <!-- <DatePickerModal
-      ref="datePickerModal"
-      :date-time="bookingDate"
-      @handle-date-change="handleDateChange"
-    /> -->
+    <ClientOnly>
+      <DatePickerModal
+        ref="datePickerModal"
+        :date-time="bookingDate"
+        @handle-date-change="handleDateChange"
+      />
+    </ClientOnly>
   </main>
 </template>
 
