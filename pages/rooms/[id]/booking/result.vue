@@ -3,6 +3,7 @@ const route = useRoute();
 const router = useRouter();
 
 const demoUserId = 'a';
+const demoBookingId = 'a';
 
 
 </script>
@@ -81,7 +82,7 @@ const demoUserId = 'a';
           >
             <div>
               <p class="mb-2 text-neutral-80 fs-8 fs-md-7 fw-medium">
-                預訂參考編號： {{ bookingId }}
+                預訂參考編號： {{ demoBookingId }}
               </p>
               <h2 class="mb-0 text-neutral-100 fs-7 fs-md-5 fw-bold">
                 即將來的行程
