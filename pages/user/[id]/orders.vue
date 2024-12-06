@@ -1,8 +1,9 @@
 <script setup>
-// import 'bootstrap/js/dist/modal';
 definePageMeta({
   layout: 'user'
 });
+
+// FIXME:
 const demoRoomId = 'a';
 </script>
 

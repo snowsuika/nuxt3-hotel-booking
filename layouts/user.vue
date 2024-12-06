@@ -1,4 +1,5 @@
 <script setup>
+// FIXME:
 const demoUserId = 'a';
 </script>
 
@@ -9,24 +10,24 @@ const demoUserId = 'a';
         <source
           srcset="@/assets/images/profile-hero.png"
           media="(min-width: 576px)"
-        >
+        />
         <img
           class="w-100 object-fit-cover"
-          style="height: 384px;"
+          style="height: 384px"
           src="@/assets/images/profile-hero-sm.png"
           alt="profile-hero"
-        >
+        />
       </picture>
       <div class="container">
-        <div class="hero-content d-flex flex-column flex-md-row justify-content-center justify-content-md-start align-items-md-center gap-4 gap-md-6 mx-5 my-10 mx-md-0 my-md-0">
+        <div
+          class="hero-content d-flex flex-column flex-md-row justify-content-center justify-content-md-start align-items-md-center gap-4 gap-md-6 mx-5 my-10 mx-md-0 my-md-0"
+        >
           <img
             class="avatar"
             src="@/assets/images/avatar-6.png"
             alt="avatar"
-          >
-          <h1 class="text-neutral-0 fw-bold">
-            Hello，Jessica
-          </h1>
+          />
+          <h1 class="text-neutral-0 fw-bold">Hello，Jessica</h1>
         </div>
       </div>
     </section>
@@ -35,15 +36,18 @@ const demoUserId = 'a';
       <div class="container">
         <ul class="nav mb-10 mb-md-20 fw-bold">
           <li class="nav-item position-relative">
-            <NuxtLink :to="`/user/${demoUserId}/profile`" exact-active-class="text-primary-100"
+            <NuxtLink
+              :to="`/user/${demoUserId}/profile`"
+              exact-active-class="text-primary-100"
               class="nav-link px-6 py-4 text-white"
             >
               個人資料
             </NuxtLink>
           </li>
           <li class="nav-item position-relative">
-            <NuxtLink :to="`/user/${demoUserId}/orders`"
-            exact-active-class="text-primary-100"
+            <NuxtLink
+              :to="`/user/${demoUserId}/orders`"
+              exact-active-class="text-primary-100"
               class="nav-link px-6 py-4 text-white"
             >
               我的訂單
@@ -59,18 +63,18 @@ const demoUserId = 'a';
       <source
         srcset="@/assets/images/deco-line-group-horizontal-full.svg"
         media="(min-width:576px)"
-      >
+      />
       <img
         class="w-100"
         src="@/assets/images/deco-line-group-horizontal-sm.svg"
         alt="deco-line-group"
-      >
+      />
     </picture>
   </main>
 </template>
 
 <style lang="scss" scoped>
-@import "bootstrap/scss/mixins/breakpoints";
+@import 'bootstrap/scss/mixins/breakpoints';
 
 $grid-breakpoints: (
   xs: 0,
@@ -81,7 +85,6 @@ $grid-breakpoints: (
   xxl: 1400px,
   xxxl: 1537px
 );
-
 
 .hero-content {
   position: absolute;
@@ -102,7 +105,6 @@ $grid-breakpoints: (
     height: 72px;
   }
 }
-
 
 .nav-link.text-primary-100::after {
   position: absolute;

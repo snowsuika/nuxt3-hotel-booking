@@ -2,7 +2,9 @@
 const route = useRoute();
 const transparentBgRoute = ['index', 'rooms'];
 
-const isTransparentRoute = computed(() => transparentBgRoute.includes(route.name));
+const isTransparentRoute = computed(() =>
+  transparentBgRoute.includes(route.name)
+);
 const isScrolled = ref(false);
 
 const handleScroll = () => {
@@ -22,7 +24,6 @@ const demoUserId = 'a';
 </script>
 
 <template>
-
   <header
     :class="{
       scrolled: isScrolled,
@@ -67,7 +68,12 @@ const demoUserId = 'a';
         >
           <ul class="navbar-nav gap-4 ms-auto fw-bold">
             <li class="nav-item">
-              <NuxtLink to="/rooms" class="nav-link p-4 text-neutral-0"> 客房旅宿 </NuxtLink>
+              <NuxtLink
+                to="/rooms"
+                class="nav-link p-4 text-neutral-0"
+              >
+                客房旅宿
+              </NuxtLink>
             </li>
             <li class="d-none d-md-block nav-item">
               <div class="btn-group">
@@ -90,19 +96,34 @@ const demoUserId = 'a';
                     <NuxtLink
                       :to="`/user/${demoUserId}/profile`"
                       class="dropdown-item px-6 py-4"
-                    >我的帳戶</NuxtLink>
+                    >
+                      我的帳戶
+                    </NuxtLink>
                   </li>
                   <li>
-                    <NuxtLink to="/login" class="dropdown-item px-6 py-4">登出</NuxtLink>
+                    <NuxtLink
+                      to="/login"
+                      class="dropdown-item px-6 py-4"
+                    >
+                      登出
+                    </NuxtLink>
                   </li>
                 </ul>
               </div>
             </li>
             <li class="d-md-none nav-item">
-              <NuxtLink to="/" class="nav-link p-4 text-neutral-0"> 會員登入 </NuxtLink>
+              <NuxtLink
+                to="/"
+                class="nav-link p-4 text-neutral-0"
+              >
+                會員登入
+              </NuxtLink>
             </li>
             <li class="nav-item">
-              <NuxtLink to="/rooms" class="btn btn-primary-100 px-8 py-4 text-white fw-bold border-0 rounded-3">
+              <NuxtLink
+                to="/rooms"
+                class="btn btn-primary-100 px-8 py-4 text-white fw-bold border-0 rounded-3"
+              >
                 立即訂房
               </NuxtLink>
             </li>

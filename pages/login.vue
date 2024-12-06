@@ -1,9 +1,8 @@
 <script setup>
 definePageMeta({
-  layout: 'auth',
-})
+  layout: 'auth'
+});
 </script>
-
 
 <template>
   <div class="px-5 px-md-0">
@@ -11,9 +10,7 @@ definePageMeta({
       <p class="mb-2 text-primary-100 fs-8 fs-md-7 fw-bold">
         享樂酒店，誠摯歡迎
       </p>
-      <h1 class="text-neutral-0 fw-bold">
-        立即開始旅程
-      </h1>
+      <h1 class="text-neutral-0 fw-bold">立即開始旅程</h1>
     </div>
 
     <form class="mb-10">
@@ -30,7 +27,7 @@ definePageMeta({
           value="jessica@sample.com"
           placeholder="請輸入信箱"
           type="email"
-        >
+        />
       </div>
       <div class="mb-4 fs-8 fs-md-7">
         <label
@@ -45,16 +42,18 @@ definePageMeta({
           value="jessica@sample.com"
           placeholder="請輸入密碼"
           type="password"
-        >
+        />
       </div>
-      <div class="d-flex justify-content-between align-items-center mb-10 fs-8 fs-md-7">
+      <div
+        class="d-flex justify-content-between align-items-center mb-10 fs-8 fs-md-7"
+      >
         <div class="form-check d-flex align-items-end gap-2 text-neutral-0">
           <input
             id="remember"
             class="form-check-input"
             type="checkbox"
             value=""
-          >
+          />
           <label
             class="form-check-label fw-bold"
             for="remember"
@@ -90,7 +89,7 @@ definePageMeta({
 </template>
 
 <style lang="scss" scoped>
-@import "bootstrap/scss/mixins/breakpoints";
+@import 'bootstrap/scss/mixins/breakpoints';
 
 $grid-breakpoints: (
   xs: 0,
@@ -102,8 +101,7 @@ $grid-breakpoints: (
   xxxl: 1537px
 );
 
-
-input[type="password"] {
+input[type='password'] {
   font: small-caption;
   font-size: 1.5rem;
 }
@@ -124,7 +122,7 @@ input::placeholder {
 }
 
 .form-check-input:checked {
-  background-color: #BF9D7D;
-  border-color: #BF9D7D;
+  background-color: #bf9d7d;
+  border-color: #bf9d7d;
 }
 </style>

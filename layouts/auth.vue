@@ -1,5 +1,4 @@
 <script setup>
-// import 'bootstrap/js/dist/collapse';
 </script>
 
 <template>

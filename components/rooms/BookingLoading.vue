@@ -1,7 +1,7 @@
 <template>
   <div
     class="position-fixed z-3 d-flex justify-content-center align-items-center px-3"
-    style="inset: 0; background-color: #0005;; backdrop-filter: blur(10px);"
+    style="inset: 0; background-color: #0005; backdrop-filter: blur(10px);"
   >
     <div
       class="w-100 h-50 h-md-75 d-flex flex-column justify-content-center align-items-center bg-neutral-0"
