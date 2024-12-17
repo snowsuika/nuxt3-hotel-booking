@@ -1,5 +1,6 @@
 <script setup>
 const route = useRoute();
+const router = useRouter();
 const transparentBgRoute = ['index', 'rooms'];
 
 const isTransparentRoute = computed(() =>
@@ -19,8 +20,20 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
 });
 
-// FIXME:
-const demoUserId = 'a';
+const token = useCookie('auth');
+const userStore = useUserStore();
+
+const { userInfo } = storeToRefs(userStore);
+const { getUserInfo } = userStore;
+
+if (token.value) {
+  await getUserInfo(token.value);
+}
+
+const signout = () => {
+  token.value = null;
+  router.push('/')
+};
 </script>
 
 <template>
@@ -75,7 +88,10 @@ const demoUserId = 'a';
                 客房旅宿
               </NuxtLink>
             </li>
-            <li class="d-none d-md-block nav-item">
+            <li
+              v-if="token"
+              class="d-none d-md-block nav-item"
+            >
               <div class="btn-group">
                 <button
                   type="button"
@@ -86,7 +102,7 @@ const demoUserId = 'a';
                     class="fs-5"
                     name="mdi:account-circle-outline"
                   />
-                  Jessica
+                  {{ userInfo.name }}
                 </button>
                 <ul
                   class="dropdown-menu py-3 overflow-hidden"
@@ -94,7 +110,7 @@ const demoUserId = 'a';
                 >
                   <li>
                     <NuxtLink
-                      :to="`/user/${demoUserId}/profile`"
+                      :to="`/user/profile`"
                       class="dropdown-item px-6 py-4"
                     >
                       我的帳戶
@@ -104,6 +120,7 @@ const demoUserId = 'a';
                     <NuxtLink
                       to="/login"
                       class="dropdown-item px-6 py-4"
+                      @click="signout"
                     >
                       登出
                     </NuxtLink>
@@ -111,9 +128,12 @@ const demoUserId = 'a';
                 </ul>
               </div>
             </li>
-            <li class="d-md-none nav-item">
+            <li
+              v-else
+              class="nav-item"
+            >
               <NuxtLink
-                to="/"
+                to="/login"
                 class="nav-link p-4 text-neutral-0"
               >
                 會員登入

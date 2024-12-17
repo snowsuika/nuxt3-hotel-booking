@@ -11,12 +11,14 @@
   },
   "dependencies": {
     "@nuxt/icon": "^1.9.0",
+    "@pinia/nuxt": "^0.5.4",
     "@popperjs/core": "^2.11.8",
     "@vee-validate/i18n": "^4.14.7",
     "@vee-validate/nuxt": "^4.14.7",
     "@vee-validate/rules": "^4.14.7",
     "bootstrap": "5.3.3",
     "nuxt": "3.12.4",
+    "pinia": "^2.2.0",
     "sass": "1.32.13",
     "sweetalert2": "^11.15.0",
     "swiper": "11.1.8",
@@ -29,5 +31,8 @@
     "@iconify-json/ci": "^1.2.1",
     "@iconify-json/mdi": "^1.2.1",
     "@iconify-json/uil": "^1.2.1"
+  },
+  "overrides": {
+    "vue": "latest"
   }
 }

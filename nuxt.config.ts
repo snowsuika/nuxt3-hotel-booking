@@ -22,7 +22,7 @@ export default defineNuxtConfig({
     }
   },
   css: ['@/assets/stylesheets/all.scss'],
-  modules: ['@nuxt/icon', '@vee-validate/nuxt'],
+  modules: ['@nuxt/icon', '@vee-validate/nuxt','@pinia/nuxt'],
   veeValidate: {
     componentNames: {
       Form: "VForm",
