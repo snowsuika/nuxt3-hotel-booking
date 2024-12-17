@@ -22,5 +22,12 @@ export default defineNuxtConfig({
     }
   },
   css: ['@/assets/stylesheets/all.scss'],
-  modules: ['@nuxt/icon']
+  modules: ['@nuxt/icon', '@vee-validate/nuxt'],
+  veeValidate: {
+    componentNames: {
+      Form: "VForm",
+      Field: "VField",
+      ErrorMessage: "VErrorMessage",
+    },
+  },
 });

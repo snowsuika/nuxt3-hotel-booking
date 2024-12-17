@@ -1,13 +1,79 @@
 <script setup>
+const router = useRouter();
+
 definePageMeta({
   layout: 'auth'
 });
 
+useHead({
+  script: [
+    {
+      src: 'https://code.essoduke.org/js/twzipcode/twzipcode.latest.js',
+      async: true
+    }
+  ]
+});
+
+const { isEnabled, userSignupObject, onSignup } = useSignup();
+const { showSuccessAlert, showErrorAlert } = useAlert();
+
+const emailPasswardFormRef = ref(null);
+const personalInfoFormRef = ref(null);
+
 const isEmailAndPasswordValid = ref(false);
+const isAgreementCheck = ref(false);
+const confirmPassword = ref('');
+const selectedYear = ref(1);
+const selectedMonth = ref(1);
+const selectedDay = ref(1);
+
+const vaildEmailAndPassward = async () => {
+  if (userSignupObject.value.password !== confirmPassword.value) {
+    await showErrorAlert('兩次密碼不同');
+    return;
+  }
+
+  isEmailAndPasswordValid.value = true;
+};
+
+const preSubmitSignup = async () => {
+  if (!isAgreementCheck.value) {
+    await showErrorAlert('請閱讀並同意本網站個資使用規範');
+    return;
+  }
+
+  userSignupObject.value.birthday = `${selectedYear.value + 1958}/${
+    selectedMonth.value
+  }/${selectedDay.value}`;
+
+  try {
+    await onSignup();
+    await showSuccessAlert('註冊成功');
+    router.push('/');
+  } catch (error) {
+    await showErrorAlert(error);
+  } finally {
+    emailPasswardFormRef.value.resetForm();
+    personalInfoFormRef.value.resetForm();
+  }
+};
+
+onMounted(() => {
+  new TWzipcode({
+    district: {
+      onChange(id) {
+        userSignupObject.value.address.zipcode = Number(
+          this.nth(id).get()?.zipcode
+        );
+      }
+    }
+  });
+});
 </script>
 
 <template>
   <div class="p-5 px-md-0 py-md-30">
+    <button @click="preSubmitSignup">click</button>
     <div class="mb-10">
       <p class="mb-2 text-primary-100 fs-8 fs-md-7 fw-bold">
         享樂酒店，誠摯歡迎
@@ -55,9 +121,11 @@ const isEmailAndPasswordValid = ref(false);
     </div>
 
     <div class="mb-4">
-      <form
-        :class="{ 'd-none': isEmailAndPasswordValid }"
+      <VForm
+        v-slot="{ errors, meta, resetForm }"
         class="mb-4"
+        :class="{ 'd-none': isEmailAndPasswordValid }"
+        ref="emailPasswardFormRef"
       >
         <div class="mb-4 fs-8 fs-md-7">
           <label
@@ -66,11 +134,19 @@ const isEmailAndPasswordValid = ref(false);
           >
             電子信箱
           </label>
-          <input
+          <VField
             id="email"
+            name="email"
             class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-            placeholder="hello@exsample.com"
+            :class="{ 'is-invalid': errors.email }"
+            v-model="userSignupObject.email"
+            placeholder="請輸入信箱"
+            rules="required|email"
             type="email"
+          />
+          <VErrorMessage
+            name="email"
+            class="invalid-feedback"
           />
         </div>
         <div class="mb-4 fs-8 fs-md-7">
@@ -80,11 +156,19 @@ const isEmailAndPasswordValid = ref(false);
           >
             密碼
           </label>
-          <input
+          <VField
             id="password"
+            name="password"
             class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-            placeholder="請輸入密碼"
+            :class="{ 'is-invalid': errors.password }"
+            v-model="userSignupObject.password"
+            placeholder="請輸入 8 碼以上密碼"
+            rules="required|min:8"
             type="password"
+          />
+          <VErrorMessage
+            name="password"
+            class="invalid-feedback"
           />
         </div>
         <div class="mb-10 fs-8 fs-md-7">
@@ -94,24 +178,37 @@ const isEmailAndPasswordValid = ref(false);
           >
             確認密碼
           </label>
-          <input
+          <VField
             id="confirmPassword"
+            name="confirmPassword"
             class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
+            :class="{ 'is-invalid': errors.confirmPassword }"
+            v-model="confirmPassword"
             placeholder="請再輸入一次密碼"
+            rules="required"
             type="password"
+          />
+          <VErrorMessage
+            name="confirmPassword"
+            class="invalid-feedback"
           />
         </div>
         <button
           class="btn btn-neutral-40 w-100 py-4 text-neutral-60 fw-bold"
           type="button"
-          @click="isEmailAndPasswordValid = true"
+          :disabled="!meta.valid"
+          @click="vaildEmailAndPassward"
         >
           下一步
         </button>
-      </form>
-      <form
-        :class="{ 'd-none': !isEmailAndPasswordValid }"
+        {{ meta.valid }}
+      </VForm>
+      <VForm
+        v-slot="{ errors, meta, resetForm }"
+        @submit="preSubmitSignup"
         class="mb-4"
+        :class="{ 'd-none': !isEmailAndPasswordValid }"
+        ref="personalInfoFormRef"
       >
         <div class="mb-4 fs-8 fs-md-7">
           <label
@@ -120,11 +217,19 @@ const isEmailAndPasswordValid = ref(false);
           >
             姓名
           </label>
-          <input
+          <VField
             id="name"
+            name="name"
             class="form-control p-4 text-neutral-100 fw-medium border-neutral-40 rounded-3"
+            :class="{ 'is-invalid': errors.name }"
+            v-model="userSignupObject.name"
             placeholder="請輸入姓名"
-            type="text"
+            rules="required"
+            type="name"
+          />
+          <VErrorMessage
+            name="name"
+            class="invalid-feedback"
           />
         </div>
         <div class="mb-4 fs-8 fs-md-7">
@@ -134,11 +239,20 @@ const isEmailAndPasswordValid = ref(false);
           >
             手機號碼
           </label>
-          <input
+
+          <VField
             id="phone"
+            name="phone"
             class="form-control p-4 text-neutral-100 fw-medium border-neutral-40 rounded-3"
+            :class="{ 'is-invalid': errors.phone }"
+            v-model="userSignupObject.phone"
             placeholder="請輸入手機號碼"
+            rules="required|phone"
             type="tel"
+          />
+          <VErrorMessage
+            name="phone"
+            class="invalid-feedback"
           />
         </div>
         <div class="mb-4 fs-8 fs-md-7">
@@ -150,31 +264,39 @@ const isEmailAndPasswordValid = ref(false);
           </label>
           <div class="d-flex gap-2">
             <select
+              v-model="selectedYear"
               id="birth"
               class="form-select p-4 text-neutral-80 fw-medium rounded-3"
             >
               <option
                 v-for="year in 65"
                 :key="year"
-                value="`${year + 1958} 年`"
+                :value="year"
               >
                 {{ year + 1958 }} 年
               </option>
             </select>
-            <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
+
+            <select
+              v-model="selectedMonth"
+              class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+            >
               <option
                 v-for="month in 12"
                 :key="month"
-                value="`${month} 月`"
+                :value="month"
               >
                 {{ month }} 月
               </option>
             </select>
-            <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
+            <select
+              v-model="selectedDay"
+              class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+            >
               <option
                 v-for="day in 30"
                 :key="day"
-                value="`${day} 日`"
+                :value="day"
               >
                 {{ day }} 日
               </option>
@@ -189,37 +311,36 @@ const isEmailAndPasswordValid = ref(false);
             地址
           </label>
           <div>
-            <div class="d-flex gap-2 mb-2">
-              <select
-                class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-              >
-                <option value="臺北市">臺北市</option>
-                <option value="臺中市">臺中市</option>
-                <option
-                  selected
-                  value="高雄市"
-                >
-                  高雄市
-                </option>
-              </select>
-              <select
-                class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-              >
-                <option value="前金區">前金區</option>
-                <option value="鹽埕區">鹽埕區</option>
-                <option
-                  selected
-                  value="新興區"
-                >
-                  新興區
-                </option>
-              </select>
+            <div class="twzipcode">
+              <div class="d-flex gap-2 mb-2">
+                <select
+                  data-role="county"
+                  class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+                ></select>
+
+                <select
+                  data-role="district"
+                  class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+                ></select>
+              </div>
+              <input
+                type="hidden"
+                data-role="zipcode"
+              />
             </div>
-            <input
+            <VField
               id="address"
-              type="text"
+              name="address"
               class="form-control p-4 rounded-3"
+              :class="{ 'is-invalid': errors.address }"
+              v-model="userSignupObject.address.detail"
               placeholder="請輸入詳細地址"
+              rules="required"
+              type="text"
+            />
+            <VErrorMessage
+              name="address"
+              class="invalid-feedback"
             />
           </div>
         </div>
@@ -231,7 +352,8 @@ const isEmailAndPasswordValid = ref(false);
             id="agreementCheck"
             class="form-check-input"
             type="checkbox"
-            value=""
+            :checked="isAgreementCheck"
+            v-model="isAgreementCheck"
           />
           <label
             class="form-check-label fw-bold"
@@ -242,11 +364,12 @@ const isEmailAndPasswordValid = ref(false);
         </div>
         <button
           class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
-          type="button"
+          type="submit"
+          :disabled="meta.value"
         >
           完成註冊
         </button>
-      </form>
+      </VForm>
     </div>
 
     <p class="mb-0 fs-8 fs-md-7">

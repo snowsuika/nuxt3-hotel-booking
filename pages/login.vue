@@ -1,4 +1,5 @@
 <script setup>
+const { isEnabled, userLoginObject, loginAccount } = useAuth();
 definePageMeta({
   layout: 'auth'
 });
@@ -13,7 +14,11 @@ definePageMeta({
       <h1 class="text-neutral-0 fw-bold">立即開始旅程</h1>
     </div>
 
-    <form class="mb-10">
+    <VForm
+      v-slot="{ errors, meta, resetForm }"
+      @submit="loginAccount"
+      class="mb-10"
+    >
       <div class="mb-4 fs-8 fs-md-7">
         <label
           class="mb-2 text-neutral-0 fw-bold"
@@ -21,12 +26,19 @@ definePageMeta({
         >
           電子信箱
         </label>
-        <input
+        <VField
           id="email"
+          name="email"
           class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-          value="jessica@sample.com"
+          :class="{ 'is-invalid': errors.email }"
+          v-model="userLoginObject.email"
           placeholder="請輸入信箱"
+          rules="required|email"
           type="email"
+        />
+        <VErrorMessage
+          name="email"
+          class="invalid-feedback"
         />
       </div>
       <div class="mb-4 fs-8 fs-md-7">
@@ -36,12 +48,19 @@ definePageMeta({
         >
           密碼
         </label>
-        <input
+        <VField
           id="password"
+          name="password"
           class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-          value="jessica@sample.com"
+          :class="{ 'is-invalid': errors.password }"
+          v-model="userLoginObject.password"
           placeholder="請輸入密碼"
+          rules="required"
           type="password"
+        />
+        <VErrorMessage
+          name="password"
+          class="invalid-feedback"
         />
       </div>
       <div
@@ -70,11 +89,12 @@ definePageMeta({
       </div>
       <button
         class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
-        type="button"
+        type="submit"
+        :disabled="!meta.valid"
       >
         會員登入
       </button>
-    </form>
+    </VForm>
 
     <p class="mb-0 fs-8 fs-md-7">
       <span class="me-2 text-neutral-0 fw-medium">沒有會員嗎？</span>
