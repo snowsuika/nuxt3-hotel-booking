@@ -1,6 +1,6 @@
 <script setup>
 const { $priceCommaFormat } = useNuxtApp()
-const roomList = ref([]);
+const { roomList, getRoomList } = useRoom();
 
 /**
  * Swiper
@@ -22,15 +22,10 @@ const roomSwiperOptions = {
   autoplay: { delay: 2500, disableOnInteraction: false }
 };
 
-// NOTE: 取得房間列表
-const baseURL = 'http://localhost:3005/api/v1';
-
-const { data } = await useFetch('/rooms', {
-  baseURL
-});
-
-if (data.value?.status) {
-  roomList.value = data.value.result;
+try {
+  await getRoomList();
+} catch (error) {
+  alert(error)
 }
 </script>
 
