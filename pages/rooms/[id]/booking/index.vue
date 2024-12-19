@@ -2,11 +2,6 @@
 definePageMeta({
   middleware: 'auth'
 });
-/**
- * TWzipcode 實例
- */
-const twzipcodeInstance = ref(null);
-
 useHead({
   script: [
     {
@@ -28,34 +23,28 @@ useHead({
     }
   ]
 });
-
 const route = useRoute();
 const router = useRouter();
-import BookingLoading from '@/components/rooms/BookingLoading.vue';
+const { $swal } = useNuxtApp();
 const { $priceCommaFormat } = useNuxtApp();
-
-const goBack = () => {
-  router.back();
-};
-  const isLoading = ref(false);
-const confirmBooking = () => {
-  isLoading.value = true;
-
-  setTimeout(() => {
-    isLoading.value = false;
-    router.push(`/rooms/${route.params?.id}/booking/result`);
-  }, 1500);
-};
+import BookingLoading from '@/components/rooms/BookingLoading.vue';
 
 // 取得訂房資訊
 const bookingStore = useBookingStore();
 const { bookingData } = storeToRefs(bookingStore);
 
+// 取得使用者個人資料
+const userStore = useUserStore();
+const { userInfo } = storeToRefs(userStore);
 
-if (Object.keys(bookingData.value).length === 0) {
-  goBack();
+if (
+  Object.keys(bookingData.value).length === 0 ||
+  Object.keys(userInfo.value).length === 0
+) {
+  router.back();
 }
 
+// 計算訂房總金額
 const discount = 1000;
 const total = computed(() => {
   return (
@@ -63,11 +52,6 @@ const total = computed(() => {
     bookingData.value?.roomDetail?.price
   );
 });
-
-// 取得使用者個人資料
-const { userInfo } = storeToRefs(userStore);
-const userStore = useUserStore();
-
 
 // 訂房人資訊
 const boookingInfo = ref({
@@ -86,6 +70,41 @@ const boookingInfo = ref({
   }
 });
 
+// 送出訂房訂單
+const isLoading = ref(false);
+const submitButtonRef = ref(null);
+const memberFormRef = ref(null);
+
+const confirmReservation = () => {
+  if (memberFormRef.value.meta.valid) {
+    submitButtonRef.value?.click();
+  }
+};
+
+const { addOrder } = useBooking();
+
+const onSubmitReservation = async () => {
+  try {
+    isLoading.value = true;
+
+    await addOrder(boookingInfo.value);
+
+    setTimeout(() => {
+      router.push(`/rooms/${route.params?.id}/booking/result`);
+    }, 3000);
+  } catch (error) {
+    await $swal.fire({
+      position: 'center',
+      icon: 'error',
+      title: error,
+      timer: 3000,
+      showConfirmButton: false
+    });
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 // 套用會員資料
 const applyMemberData = () => {
   boookingInfo.value.userInfo = {
@@ -103,6 +122,11 @@ const applyMemberData = () => {
     twzipcodeInstance.value.set(userInfo.value.address.zipcode.toString());
   }
 };
+
+/**
+ * TWzipcode 實例
+ */
+const twzipcodeInstance = ref(null);
 </script>
 
 <template>
@@ -201,7 +225,7 @@ const applyMemberData = () => {
               </div>
               <VForm
                 v-slot="{ errors, meta, resetForm }"
-                @submit="confirmBooking"
+                @submit="onSubmitReservation"
                 class="mb-4"
                 ref="memberFormRef"
               >
@@ -313,6 +337,11 @@ const applyMemberData = () => {
                     />
                   </div>
                 </div>
+                <button
+                  ref="submitButtonRef"
+                  type="submit"
+                  class="d-none"
+                ></button>
               </VForm>
             </section>
 
@@ -497,7 +526,8 @@ const applyMemberData = () => {
               <button
                 class="btn btn-primary-100 py-4 text-neutral-0 fw-bold rounded-3"
                 type="button"
-                @click="confirmBooking"
+                :disabled="!memberFormRef?.meta.valid"
+                @click="confirmReservation"
               >
                 確認訂房
               </button>
