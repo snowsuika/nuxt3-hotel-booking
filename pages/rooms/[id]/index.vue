@@ -17,11 +17,10 @@ try {
 }
 
 /**
- * Date Picker
+ * Date Picker Modal
  */
 import DatePickerModal from '@/components/rooms/DatePickerModal.vue';
 const datePickerModalRef = ref(null);
-
 const bookingPeople = ref(1);
 const daysCount = ref(0);
 
@@ -48,12 +47,29 @@ const bookingDate = reactive({
 });
 
 const handleDateChange = (bookingInfo) => {
-  const { start, end } = bookingInfo.date;
-  bookingDate.date.start = start;
-  bookingDate.date.end = end;
+  bookingDate.date = bookingInfo.date;
 
   bookingPeople.value = bookingInfo?.people || 1;
   daysCount.value = bookingInfo.daysCount;
+};
+const resrvationFormRef = ref(null);
+
+const bookingStore = useBookingStore();
+const { setBookingData } = bookingStore;
+
+const handleReservation = () => {
+  const bookingInfo = {
+    ...bookingDate,
+    bookingPeople: bookingPeople.value,
+    daysCount: daysCount.value
+  };
+
+  setBookingData({
+    bookingInfo,
+    roomDetail: roomDetail.value
+  });
+
+  navigateTo(`/rooms/${roomId}/booking`);
 };
 </script>
 
@@ -282,120 +298,144 @@ const handleDateChange = (bookingInfo) => {
             </section>
           </div>
           <div class="d-none d-md-block col-md-5">
-            <div
-              class="rounded-3xl position-sticky d-flex flex-column gap-10 p-10 ms-auto bg-neutral-0"
-              style="top: 160px; max-width: 478px"
+            <VForm
+              v-slot="{ errors, meta }"
+              @submit="handleReservation"
             >
-              <h5
-                class="pb-4 mb-0 text-neutral-100 fw-bold border-bottom border-neutral-40"
+              <div
+                class="rounded-3xl position-sticky d-flex flex-column gap-10 p-10 ms-auto bg-neutral-0"
+                style="top: 160px; max-width: 478px"
               >
-                預訂房型
-              </h5>
-
-              <div class="text-neutral-80">
-                <h2 class="fw-bold">{{ roomDetail.name }}</h2>
-                <p class="mb-0 fw-medium">
-                  {{ roomDetail.description }}
-                </p>
-              </div>
-
-              <div>
-                <div class="d-flex flex-wrap gap-2 mb-4">
-                  <div class="form-floating flex-grow-1 flex-shrink-1">
-                    <input
-                      id="checkinInput"
-                      readonly
-                      type="date"
-                      :value="bookingDate.date.start"
-                      class="form-control p-4 pt-9 text-neutral-100 fw-medium border-neutral-100 rounded-3"
-                      style="min-height: 74px"
-                      placeholder="yyyy-mm-dd"
-                      @click="openSelectDateModal"
-                    />
-                    <label
-                      class="text-neutral-80 fw-medium"
-                      style="top: 8px; left: 8px"
-                      for="checkinInput"
-                    >
-                      入住
-                    </label>
-                  </div>
-
-                  <div class="form-floating flex-grow-1 flex-shrink-1">
-                    <input
-                      id="checkoutInput"
-                      readonly
-                      type="date"
-                      :value="bookingDate.date.end"
-                      class="form-control p-4 pt-9 text-neutral-100 fw-medium border-neutral-100 rounded-3"
-                      style="min-height: 74px"
-                      placeholder="yyyy-mm-dd"
-                      @click="openSelectDateModal"
-                    />
-                    <label
-                      class="text-neutral-80 fw-medium"
-                      style="top: 8px; left: 8px"
-                      for="checkoutInput"
-                    >
-                      退房
-                    </label>
-                  </div>
-                </div>
-
-                <div
-                  class="d-flex justify-content-between align-items-center text-neutral-100"
+                <h5
+                  class="pb-4 mb-0 text-neutral-100 fw-bold border-bottom border-neutral-40"
                 >
-                  <p class="mb-0">人數</p>
-                  <div class="d-flex align-items-center gap-4">
-                    <button
-                      :class="{ 'disabled bg-neutral-40': bookingPeople === 1 }"
-                      class="btn btn-neutral-0 p-4 border border-neutral-40 rounded-circle"
-                      type="button"
-                      @click="bookingPeople--"
-                    >
-                      <Icon
-                        class="fs-5 text-neutral-100"
-                        name="ic:baseline-minus"
-                      />
-                    </button>
+                  預訂房型
+                </h5>
 
-                    <h6
-                      id="people"
-                      class="d-flex justify-content-center align-items-center fw-bold text-neutral-100"
-                      style="width: 24px"
-                      name="people"
-                    >
-                      {{ bookingPeople }}
-                    </h6>
+                <div class="text-neutral-80">
+                  <h2 class="fw-bold">{{ roomDetail.name }}</h2>
+                  <p class="mb-0 fw-medium">
+                    {{ roomDetail.description }}
+                  </p>
+                </div>
 
-                    <button
-                      :class="{
-                        'disabled bg-neutral-40':
-                          bookingPeople === roomDetail.maxPeople
-                      }"
-                      class="btn btn-neutral-0 p-4 border border-neutral-40 rounded-circle"
-                      type="button"
-                      @click="bookingPeople++"
-                    >
-                      <Icon
-                        class="fs-5 text-neutral-100"
-                        name="ic:baseline-plus"
+                <div>
+                  <div class="d-flex flex-wrap gap-2 mb-4">
+                    <div class="form-floating flex-grow-1 flex-shrink-1">
+                      <VField
+                        id="checkinInput"
+                        name="checkinInput"
+                        readonly
+                        class="form-control p-4 pt-9 text-neutral-100 fw-medium border-neutral-100 rounded-3"
+                        :class="{ 'is-invalid': errors.checkinInput }"
+                        rules="required"
+                        type="date"
+                        v-model="bookingDate.date.start"
+                        style="min-height: 74px"
+                        placeholder="yyyy-mm-dd"
+                        @click="openSelectDateModal"
                       />
-                    </button>
+                      <VErrorMessage
+                        name="checkinInput"
+                        class="invalid-feedback"
+                      />
+
+                      <label
+                        class="text-neutral-80 fw-medium"
+                        style="top: 8px; left: 8px"
+                        for="checkinInput"
+                      >
+                        入住
+                      </label>
+                    </div>
+
+                    <div class="form-floating flex-grow-1 flex-shrink-1">
+                      <VField
+                        id="checkoutInput"
+                        name="checkoutInput"
+                        readonly
+                        class="form-control p-4 pt-9 text-neutral-100 fw-medium border-neutral-100 rounded-3"
+                        :class="{ 'is-invalid': errors.checkoutInput }"
+                        rules="required"
+                        type="date"
+                        v-model="bookingDate.date.end"
+                        style="min-height: 74px"
+                        placeholder="yyyy-mm-dd"
+                        @click="openSelectDateModal"
+                      />
+                      <VErrorMessage
+                        name="checkoutInput"
+                        class="invalid-feedback"
+                      />
+
+                      <label
+                        class="text-neutral-80 fw-medium"
+                        style="top: 8px; left: 8px"
+                        for="checkoutInput"
+                      >
+                        退房
+                      </label>
+                    </div>
+                  </div>
+
+                  <div
+                    class="d-flex justify-content-between align-items-center text-neutral-100"
+                  >
+                    <p class="mb-0">人數</p>
+                    <div class="d-flex align-items-center gap-4">
+                      <button
+                        :class="{
+                          'disabled bg-neutral-40': bookingPeople === 1
+                        }"
+                        class="btn btn-neutral-0 p-4 border border-neutral-40 rounded-circle"
+                        type="button"
+                        @click="bookingPeople--"
+                      >
+                        <Icon
+                          class="fs-5 text-neutral-100"
+                          name="ic:baseline-minus"
+                        />
+                      </button>
+
+                      <h6
+                        id="people"
+                        class="d-flex justify-content-center align-items-center fw-bold text-neutral-100"
+                        style="width: 24px"
+                        name="people"
+                      >
+                        {{ bookingPeople }}
+                      </h6>
+
+                      <button
+                        :class="{
+                          'disabled bg-neutral-40':
+                            bookingPeople === roomDetail.maxPeople
+                        }"
+                        class="btn btn-neutral-0 p-4 border border-neutral-40 rounded-circle"
+                        type="button"
+                        @click="bookingPeople++"
+                      >
+                        <Icon
+                          class="fs-5 text-neutral-100"
+                          name="ic:baseline-plus"
+                        />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <h5 class="mb-0 text-primary-100 fw-bold">
-                NT$ {{ $priceCommaFormat(roomDetail.price) }}
-              </h5>
-              <NuxtLink
-                :to="`/rooms/${roomId}/booking`"
-                class="btn btn-primary-100 py-4 text-neutral-0 fw-bold rounded-3"
-              >
-                立即預訂
-              </NuxtLink>
-            </div>
+                <h5 class="mb-0 text-primary-100 fw-bold">
+                  NT$ {{ $priceCommaFormat(roomDetail.price) }}
+                </h5>
+                <button
+                  type="submit"
+                  class="btn btn-primary-100 px-12 py-4 text-neutral-0 fw-bold rounded-3"
+                  :disabled="!meta.valid"
+                >
+                  立即預訂
+                </button>
+              </div>
+            </VForm>
           </div>
         </div>
       </div>
@@ -427,12 +467,13 @@ const handleDateChange = (bookingInfo) => {
               {{ daysFormatOnMobile(bookingDate.date?.end) }}
             </span>
           </div>
-          <NuxtLink
-            :to="`/rooms/${roomId}/booking`"
+
+          <button
+            type="submit"
             class="btn btn-primary-100 px-12 py-4 text-neutral-0 fw-bold rounded-3"
           >
-            立即預訂
-          </NuxtLink>
+            立即預訂 123
+          </button>
         </template>
       </div>
     </section>
