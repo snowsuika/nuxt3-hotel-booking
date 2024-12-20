@@ -2,12 +2,14 @@
 definePageMeta({
   layout: 'user'
 });
+
+const { orderList, getOrderList, deleteOrder } = useOrder();
 const { $priceCommaFormat } = useNuxtApp();
+const { $swal } = useNuxtApp();
 
 import { weekDateFormate } from '@/utils/date.js';
 import { getDaysCount } from '@/utils/daysCount.js';
 
-const { orderList, getOrderList } = useOrder();
 await getOrderList();
 
 const latestOrder = computed(() => {
@@ -27,6 +29,41 @@ const daysCount = computed(() => {
 });
 
 console.log('orderList', orderList.value);
+
+/**
+ * 取消訂單
+ */
+const { $modal } = useNuxtApp();
+const cancelModalRef = ref(null);
+let cancelModal;
+
+onMounted(() => {
+  cancelModal = $modal(cancelModalRef.value, {});
+});
+
+const openCancelModal = () => {
+  cancelModal.show();
+};
+
+const handleCancelOrder = async () => {
+  try {
+    const res = await deleteOrder(latestOrder.value._id);
+
+    if (res.status) {
+      $swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: '取消成功',
+        timer: 3000,
+        showConfirmButton: false
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  } finally {
+    cancelModal.hide();
+  }
+};
 </script>
 
 <template>
@@ -130,6 +167,7 @@ console.log('orderList', orderList.value);
             class="btn btn-outline-primary-100 w-50 py-4 fw-bold"
             style="--bs-btn-hover-color: #fff"
             type="button"
+            @click="openCancelModal"
           >
             取消預訂
           </button>
@@ -283,6 +321,7 @@ console.log('orderList', orderList.value);
 
   <div
     id="cancelModal"
+    ref="cancelModalRef"
     class="modal fade"
     tabindex="-1"
   >
@@ -315,6 +354,7 @@ console.log('orderList', orderList.value);
           <button
             type="button"
             class="btn btn-primary-100 flex-grow-1 m-0 py-4 text-white fw-bold"
+            @click="handleCancelOrder"
           >
             確定取消
           </button>
