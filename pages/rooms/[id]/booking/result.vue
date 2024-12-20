@@ -1,9 +1,23 @@
 <script setup>
-const router = useRouter();
+definePageMeta({
+  middleware: 'auth'
+});
 
-// FIXME:
-const demoUserId = 'a';
-const demoBookingId = 'a';
+import { weekDateFormate } from '@/utils/date.js';
+import { getDaysCount } from '@/utils/daysCount.js';
+
+
+const router = useRouter();
+const route = useRoute();
+const orderId = route.query.order_id;
+
+const { orderDetail, getOrderDetail } = useOrder();
+await getOrderDetail(orderId);
+
+const daysCount = computed(() => {
+  const { checkInDate, checkOutDate } = orderDetail.value;
+  return getDaysCount(checkInDate, checkOutDate);
+});
 </script>
 
 <template>
@@ -19,7 +33,7 @@ const demoBookingId = 'a';
               name="material-symbols:check"
             />
             <div class="text-neutral-0 fs-1">
-              <h1 class="fw-bold">恭喜，Jessica！</h1>
+              <h1 class="fw-bold">恭喜，{{ orderDetail.userInfo.name }}！</h1>
               <p class="mb-0 fw-bold">您已預訂成功</p>
             </div>
           </div>
@@ -36,7 +50,7 @@ const demoBookingId = 'a';
             <button
               class="btn btn-primary-100 px-md-15 py-4 text-neutral-0 fw-bold border-0 rounded-3"
               type="button"
-              @click="router.push(`/user/${demoUserId}/orders`)"
+              @click="router.push(`/user/orders`)"
             >
               前往我的訂單
             </button>
@@ -48,15 +62,21 @@ const demoBookingId = 'a';
           <div class="d-flex flex-column gap-6">
             <div>
               <p class="mb-2 text-neutral-40 fw-medium">姓名</p>
-              <span class="text-neutral-0 fw-bold">Jessica Ｗang</span>
+              <span class="text-neutral-0 fw-bold">
+                {{ orderDetail.userInfo.name }}
+              </span>
             </div>
             <div>
               <p class="mb-2 text-neutral-40 fw-medium">手機號碼</p>
-              <span class="text-neutral-0 fw-bold">+886 912 345 678</span>
+              <span class="text-neutral-0 fw-bold">
+                {{ orderDetail.userInfo.phone }}
+              </span>
             </div>
             <div>
               <p class="mb-2 text-neutral-40 fw-medium">電子信箱</p>
-              <span class="text-neutral-0 fw-bold">jessica@sample.com</span>
+              <span class="text-neutral-0 fw-bold">
+                {{ orderDetail.userInfo.email }}
+              </span>
             </div>
           </div>
         </div>
@@ -68,7 +88,7 @@ const demoBookingId = 'a';
           >
             <div>
               <p class="mb-2 text-neutral-80 fs-8 fs-md-7 fw-medium">
-                預訂參考編號： {{ demoBookingId }}
+                預訂參考編號： {{ orderDetail.orderId }}
               </p>
               <h2 class="mb-0 text-neutral-100 fs-7 fs-md-5 fw-bold">
                 即將來的行程
@@ -77,33 +97,37 @@ const demoBookingId = 'a';
 
             <img
               class="img-fluid rounded-3"
-              src="@/assets/images/room-a-1.png"
-              alt="room-a"
+              :src="orderDetail.roomId.imageUrl"
+              :alt="orderDetail.roomId.name"
             />
 
             <section class="d-flex flex-column gap-6">
               <h3
                 class="d-flex align-items-center mb-6 text-neutral-80 fs-8 fs-md-6 fw-bold"
               >
-                <p class="mb-0">尊爵雙人房，1 晚</p>
+                <p class="mb-0">
+                  {{ `${orderDetail.roomId.name}，${daysCount} 晚` }}
+                </p>
                 <span
                   class="d-inline-block mx-4 bg-neutral-80"
                   style="width: 1px; height: 18px"
                 />
-                <p class="mb-0">住宿人數：2 位</p>
+                <p class="mb-0">住宿人數：{{ orderDetail.peopleNum }} 位</p>
               </h3>
 
               <div class="text-neutral-80 fs-8 fs-md-7 fw-bold">
                 <p class="title-deco mb-2">
-                  入住：6 月 10 日星期二，15:00 可入住
+                  入住：{{ weekDateFormate(orderDetail.checkInDate) }}，15:00
+                  可入住
                 </p>
                 <p class="title-deco mb-0">
-                  退房：6 月 11 日星期三，12:00 前退房
+                  退房：{{ weekDateFormate(orderDetail.checkOutDate) }}，12:00
+                  前退房
                 </p>
               </div>
 
               <p class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-bold">
-                NT$ 10,000
+                NT$ {{ $priceCommaFormat(orderDetail.roomId.price) }}
               </p>
             </section>
 
@@ -118,75 +142,16 @@ const demoBookingId = 'a';
               <ul
                 class="d-flex flex-wrap row-gap-2 column-gap-10 p-6 mb-0 fs-8 fs-md-7 bg-neutral-0 border border-neutral-40 rounded-3 list-unstyled"
               >
-                <li class="flex-item d-flex gap-2">
+                <li
+                  v-for="item in orderDetail.roomId.facilityInfo"
+                  :key="item.title"
+                  class="flex-item d-flex gap-2"
+                >
                   <Icon
                     class="fs-5 text-primary-100"
                     name="material-symbols:check"
                   />
-                  <p class="mb-0 text-neutral-80 fw-bold">電視</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">吹風機</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">冰箱</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">熱水壺</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">檯燈</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">衣櫃</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">除濕機</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">浴缸</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">書桌</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">音響</p>
+                  <p class="mb-0 text-neutral-80 fw-bold">{{ item.title }}</p>
                 </li>
               </ul>
             </section>
@@ -200,75 +165,16 @@ const demoBookingId = 'a';
               <ul
                 class="d-flex flex-wrap row-gap-2 column-gap-10 p-6 mb-0 fs-8 fs-md-7 bg-neutral-0 border border-neutral-40 rounded-3 list-unstyled"
               >
-                <li class="flex-item d-flex gap-2">
+                <li
+                  v-for="item in orderDetail.roomId.amenityInfo"
+                  :key="item.title"
+                  class="flex-item d-flex gap-2"
+                >
                   <Icon
                     class="fs-5 text-primary-100"
                     name="material-symbols:check"
                   />
-                  <p class="mb-0 text-neutral-80 fw-bold">衛生紙</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">沐浴用品</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">拖鞋</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">刮鬍刀</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">清潔用品</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">吊衣架</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">浴巾</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">刷牙用品</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">罐裝水</p>
-                </li>
-                <li class="flex-item d-flex gap-2">
-                  <Icon
-                    class="fs-5 text-primary-100"
-                    name="material-symbols:check"
-                  />
-                  <p class="mb-0 text-neutral-80 fw-bold">梳子</p>
+                  <p class="mb-0 text-neutral-80 fw-bold">{{ item.title }}</p>
                 </li>
               </ul>
             </section>
