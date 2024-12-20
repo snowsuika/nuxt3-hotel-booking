@@ -2,32 +2,17 @@
 definePageMeta({
   middleware: 'auth'
 });
-useHead({
-  script: [
-    {
-      src: 'https://code.essoduke.org/js/twzipcode/twzipcode.latest.js',
-      async: true,
-      onload: () => {
-        twzipcodeInstance.value = new TWzipcode({
-          district: {
-            onChange(id) {
-              if (boookingInfo.value?.userInfo?.address) {
-                boookingInfo.value.userInfo.address.zipcode = Number(
-                  this.nth(id).get()?.zipcode
-                );
-              }
-            }
-          }
-        });
-      }
-    }
-  ]
-});
+
 const route = useRoute();
 const router = useRouter();
 const { $swal } = useNuxtApp();
 const { $priceCommaFormat } = useNuxtApp();
 import BookingLoading from '@/components/rooms/BookingLoading.vue';
+
+// 選擇縣市區域取得郵遞區號
+const { $TWzipcode } = useNuxtApp();
+const twzipcodeRef = ref(null);
+let twzipcodeInstance = null;
 
 // 取得訂房資訊
 const bookingStore = useBookingStore();
@@ -81,22 +66,22 @@ const confirmReservation = () => {
   }
 };
 
-const { addOrder } = useBooking();
+const { addOrder } = useOrder();
 
 const onSubmitReservation = async () => {
   try {
     isLoading.value = true;
 
-    await addOrder(boookingInfo.value);
+    const bookingResult = await addOrder(boookingInfo.value);
 
-    setTimeout(() => {
-      router.push(`/rooms/${route.params?.id}/booking/result`);
-    }, 3000);
+    await navigateTo(
+      `/rooms/${route.params?.id}/booking/result?order_id=${bookingResult._id}`
+    );
   } catch (error) {
     await $swal.fire({
       position: 'center',
       icon: 'error',
-      title: error,
+      title: error.message || '預訂失敗',
       timer: 3000,
       showConfirmButton: false
     });
@@ -118,15 +103,24 @@ const applyMemberData = () => {
   };
 
   // 更新 TWzipcode 郵遞區號
-  if (userInfo.value?.address?.zipcode && twzipcodeInstance.value) {
-    twzipcodeInstance.value.set(userInfo.value.address.zipcode.toString());
+  if (userInfo.value?.address?.zipcode && twzipcodeInstance) {
+    twzipcodeInstance.set(userInfo.value.address.zipcode.toString());
   }
 };
 
-/**
- * TWzipcode 實例
- */
-const twzipcodeInstance = ref(null);
+onMounted(() => {
+  twzipcodeInstance = $TWzipcode(twzipcodeRef, {
+    district: {
+      onChange(id) {
+        if (boookingInfo.value?.userInfo?.address) {
+          boookingInfo.value.userInfo.address.zipcode = Number(
+            this.nth(id).get()?.zipcode
+          );
+        }
+      }
+    }
+  });
+});
 </script>
 
 <template>
@@ -136,7 +130,7 @@ const twzipcodeInstance = ref(null);
         <button
           class="d-flex align-items-baseline gap-2 mb-10 bg-transparent border-0"
           type="button"
-          @click="goBack"
+          @click="router.back()"
         >
           <Icon
             class="fs-5 text-neutral-100"
@@ -307,7 +301,10 @@ const twzipcodeInstance = ref(null);
                     >
                       地址
                     </label>
-                    <div className="twzipcode d-flex gap-2 mb-4">
+                    <div
+                      ref="twzipcodeRef"
+                      className="twzipcode d-flex gap-2 mb-4"
+                    >
                       <select
                         data-role="county"
                         class="form-select w-50 p-4 text-neutral-80 fs-8 fs-md-7 fw-medium rounded-3"
@@ -427,7 +424,7 @@ const twzipcodeInstance = ref(null);
                     class="d-flex flex-wrap row-gap-2 column-gap-10 p-6 mb-0 fs-8 fs-md-7 bg-neutral-0 rounded-3 list-unstyled"
                   >
                     <li
-                      class="flex-item d-flex gap-2"
+                      class="d-flex gap-2"
                       v-for="item in bookingData.roomDetail.facilityInfo"
                     >
                       <Icon
@@ -451,7 +448,7 @@ const twzipcodeInstance = ref(null);
                     class="d-flex flex-wrap row-gap-2 column-gap-10 p-6 mb-0 fs-8 fs-md-7 bg-neutral-0 rounded-3 list-unstyled"
                   >
                     <li
-                      class="flex-item d-flex gap-2"
+                      class="d-flex gap-2"
                       v-for="item in bookingData.roomDetail.amenityInfo"
                     >
                       <Icon

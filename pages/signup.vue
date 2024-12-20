@@ -5,15 +5,6 @@ definePageMeta({
   layout: 'auth'
 });
 
-useHead({
-  script: [
-    {
-      src: 'https://code.essoduke.org/js/twzipcode/twzipcode.latest.js',
-      async: true
-    }
-  ]
-});
-
 const { isEnabled, userSignupObject, onSignup } = useSignup();
 const { showSuccessAlert, showErrorAlert } = useAlert();
 
@@ -58,8 +49,12 @@ const preSubmitSignup = async () => {
   }
 };
 
+// 選擇縣市區域取得郵遞區號
+const { $TWzipcode } = useNuxtApp();
+const twzipcodeRef = ref(null);
+
 onMounted(() => {
-  new TWzipcode({
+  $TWzipcode(twzipcodeRef, {
     district: {
       onChange(id) {
         userSignupObject.value.address.zipcode = Number(
@@ -311,7 +306,10 @@ onMounted(() => {
             地址
           </label>
           <div>
-            <div class="twzipcode">
+            <div
+              ref="twzipcodeRef"
+              class="twzipcode"
+            >
               <div class="d-flex gap-2 mb-2">
                 <select
                   data-role="county"
