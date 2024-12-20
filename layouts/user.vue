@@ -1,9 +1,14 @@
 <script setup>
-// FIXME:
-const demoUserId = 'a';
+import AppHeader from '@/components/layouts/AppHeader.vue';
+import AppFooter from '@/components/layouts/AppFooter.vue';
+
+// 取得使用者個人資料
+const userStore = useUserStore();
+const { userInfo } = storeToRefs(userStore);
 </script>
 
 <template>
+  <AppHeader />
   <main class="pt-18 pt-md-30 bg-neutral-120">
     <section class="position-relative">
       <picture>
@@ -27,7 +32,7 @@ const demoUserId = 'a';
             src="@/assets/images/avatar-6.png"
             alt="avatar"
           />
-          <h1 class="text-neutral-0 fw-bold">Hello，Jessica</h1>
+          <h1 class="text-neutral-0 fw-bold">Hello，{{ userInfo.name }}</h1>
         </div>
       </div>
     </section>
@@ -37,7 +42,7 @@ const demoUserId = 'a';
         <ul class="nav mb-10 mb-md-20 fw-bold">
           <li class="nav-item position-relative">
             <NuxtLink
-              :to="`/user/${demoUserId}/profile`"
+              :to="`/user/profile`"
               exact-active-class="text-primary-100"
               class="nav-link px-6 py-4 text-white"
             >
@@ -46,7 +51,7 @@ const demoUserId = 'a';
           </li>
           <li class="nav-item position-relative">
             <NuxtLink
-              :to="`/user/${demoUserId}/orders`"
+              :to="`/user/orders`"
               exact-active-class="text-primary-100"
               class="nav-link px-6 py-4 text-white"
             >
@@ -58,7 +63,6 @@ const demoUserId = 'a';
         <slot />
       </div>
     </section>
-
     <picture>
       <source
         srcset="@/assets/images/deco-line-group-horizontal-full.svg"
@@ -71,6 +75,7 @@ const demoUserId = 'a';
       />
     </picture>
   </main>
+  <AppFooter />
 </template>
 
 <style lang="scss" scoped>
