@@ -2,9 +2,31 @@
 definePageMeta({
   layout: 'user'
 });
+const { $priceCommaFormat } = useNuxtApp();
 
-// FIXME:
-const demoRoomId = 'a';
+import { weekDateFormate } from '@/utils/date.js';
+import { getDaysCount } from '@/utils/daysCount.js';
+
+const { orderList, getOrderList } = useOrder();
+await getOrderList();
+
+const latestOrder = computed(() => {
+  return orderList.value[orderList.value.length - 1];
+});
+
+const historyOrders = computed(() => {
+  return orderList.value
+    .slice(0, orderList.value.length - 1)
+    .slice(-3)
+    .reverse();
+});
+
+const daysCount = computed(() => {
+  const { checkInDate, checkOutDate } = latestOrder.value;
+  return getDaysCount(checkInDate, checkOutDate);
+});
+
+console.log('orderList', orderList.value);
 </script>
 
 <template>
@@ -16,7 +38,7 @@ const demoRoomId = 'a';
       >
         <div>
           <p class="mb-2 text-neutral-80 fs-8 fs-md-7 fw-medium">
-            預訂參考編號： HH2302183151222
+            預訂參考編號： {{ latestOrder._id }}
           </p>
           <h2 class="mb-0 text-neutral-100 fs-7 fs-md-5 fw-bold">
             即將來的行程
@@ -25,15 +47,17 @@ const demoRoomId = 'a';
 
         <img
           class="img-fluid rounded-3"
-          src="@/assets/images/room-a-1.png"
-          alt="room-a"
+          :src="latestOrder.roomId.imageUrl"
+          :alt="latestOrder.roomId.name"
         />
 
         <section class="d-flex flex-column gap-6">
           <h3
             class="d-flex align-items-center mb-0 text-neutral-80 fs-8 fs-md-6 fw-bold"
           >
-            <p class="mb-0">尊爵雙人房，1 晚</p>
+            <p class="mb-0">
+              {{ latestOrder.roomId.name }}，{{ daysCount }} 晚
+            </p>
             <span
               class="d-inline-block mx-4 bg-neutral-80"
               style="width: 1px; height: 18px"
@@ -42,11 +66,17 @@ const demoRoomId = 'a';
           </h3>
 
           <div class="text-neutral-80 fs-8 fs-md-7 fw-bold">
-            <p class="title-deco mb-2">入住：6 月 10 日星期二，15:00 可入住</p>
-            <p class="title-deco mb-0">退房：6 月 11 日星期三，12:00 前退房</p>
+            <p class="title-deco mb-2">
+              入住：{{ weekDateFormate(latestOrder.checkInDate) }}，15:00 可入住
+            </p>
+            <p class="title-deco mb-0">
+              退房：{{ weekDateFormate(latestOrder.checkInDate) }}，12:00 前退房
+            </p>
           </div>
 
-          <p class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-bold">NT$ 10,000</p>
+          <p class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-bold">
+            NT$ {{ $priceCommaFormat(latestOrder.roomId.price) }}
+          </p>
         </section>
 
         <hr class="my-0 opacity-100 text-neutral-40" />
@@ -58,75 +88,16 @@ const demoRoomId = 'a';
           <ul
             class="d-flex flex-wrap row-gap-2 column-gap-10 p-6 mb-0 fs-8 fs-md-7 bg-neutral-0 border border-neutral-40 rounded-3 list-unstyled"
           >
-            <li class="flex-item d-flex gap-2">
+            <li
+              v-for="item in latestOrder.roomId.facilityInfo"
+              :key="item.title"
+              class="flex-item d-flex gap-2"
+            >
               <Icon
                 class="fs-5 text-primary-100"
                 name="material-symbols:check"
               />
-              <p class="mb-0 text-neutral-80 fw-bold">電視</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">吹風機</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">冰箱</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">熱水壺</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">檯燈</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">衣櫃</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">除濕機</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">浴缸</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">書桌</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">音響</p>
+              <p class="mb-0 text-neutral-80 fw-bold">{{ item.title }}</p>
             </li>
           </ul>
         </section>
@@ -138,75 +109,16 @@ const demoRoomId = 'a';
           <ul
             class="d-flex flex-wrap row-gap-2 column-gap-10 p-6 mb-0 fs-8 fs-md-7 bg-neutral-0 border border-neutral-40 rounded-3 list-unstyled"
           >
-            <li class="flex-item d-flex gap-2">
+            <li
+              v-for="item in latestOrder.roomId.amenityInfo"
+              :key="item.title"
+              class="flex-item d-flex gap-2"
+            >
               <Icon
                 class="fs-5 text-primary-100"
                 name="material-symbols:check"
               />
-              <p class="mb-0 text-neutral-80 fw-bold">衛生紙</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">拖鞋</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">沐浴用品</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">清潔用品</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">刮鬍刀</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">吊衣架</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">浴巾</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">刷牙用品</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">罐裝水</p>
-            </li>
-            <li class="flex-item d-flex gap-2">
-              <Icon
-                class="fs-5 text-primary-100"
-                name="material-symbols:check"
-              />
-              <p class="mb-0 text-neutral-80 fw-bold">梳子</p>
+              <p class="mb-0 text-neutral-80 fw-bold">{{ item.title }}</p>
             </li>
           </ul>
         </section>
@@ -222,7 +134,7 @@ const demoRoomId = 'a';
             取消預訂
           </button>
           <NuxtLink
-            :to="`/rooms/${demoRoomId}`"
+            :to="`/rooms/${latestOrder.roomId._id}`"
             class="btn btn-primary-100 text-neutral-0 w-50 py-4 fw-bold"
             type="button"
           >
@@ -236,8 +148,57 @@ const demoRoomId = 'a';
         class="rounded-3xl d-flex flex-column gap-6 gap-md-10 p-4 p-md-10 bg-neutral-0"
       >
         <h2 class="mb-0 text-neutral-100 fs-7 fs-md-5 fw-bold">歷史訂單</h2>
+        <template
+          v-for="(order, index) in historyOrders"
+          :key="order._id"
+        >
+          <div class="d-flex flex-column flex-lg-row gap-6">
+            <img
+              class="img-fluid object-fit-cover rounded-3"
+              style="max-width: 120px; height: 80px"
+              :src="order.roomId.imageUrl"
+              :alt="order.roomId.name"
+            />
+            <section class="d-flex flex-column gap-4">
+              <p class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-medium">
+                預訂參考編號： {{ order._id }}
+              </p>
 
-        <div class="d-flex flex-column flex-lg-row gap-6">
+              <h3
+                class="d-flex align-items-center mb-0 text-neutral-80 fs-8 fs-md-6 fw-bold"
+              >
+                {{ order.roomId.name }}
+              </h3>
+
+              <div class="text-neutral-80 fw-medium">
+                <p class="mb-2">
+                  住宿天數：
+                  {{ getDaysCount(order.checkInDate, order.checkOutDate) }} 晚
+                </p>
+                <p class="mb-0">住宿人數：{{ order.peopleNum }} 位</p>
+              </div>
+
+              <div class="text-neutral-80 fs-8 fs-md-7 fw-medium">
+                <p class="title-deco mb-2">
+                  入住：{{ weekDateFormate(order.checkInDate) }}，15:00 可入住
+                </p>
+                <p class="title-deco mb-0">
+                  退房：{{ weekDateFormate(order.checkOutDate) }}，12:00 前退房
+                </p>
+              </div>
+              <p class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-bold">
+                NT$ {{ $priceCommaFormat(order.roomId.price) }}
+              </p>
+            </section>
+          </div>
+
+          <hr
+            v-if="index !== historyOrders.length - 1"
+            class="my-0 opacity-100 text-neutral-40"
+          />
+        </template>
+
+        <!-- <div class="d-flex flex-column flex-lg-row gap-6">
           <img
             class="img-fluid object-fit-cover rounded-3"
             style="max-width: 120px; height: 80px"
@@ -307,44 +268,7 @@ const demoRoomId = 'a';
             </div>
             <p class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-bold">NT$ 10,000</p>
           </section>
-        </div>
-
-        <hr class="my-0 opacity-100 text-neutral-40" />
-
-        <div class="d-flex flex-column flex-lg-row gap-6">
-          <img
-            class="img-fluid object-fit-cover rounded-3"
-            style="max-width: 120px; height: 80px"
-            src="@/assets/images/room-b-sm-1.png"
-            alt="room-a"
-          />
-          <section class="d-flex flex-column gap-4">
-            <p class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-medium">
-              預訂參考編號： HH2302183151222
-            </p>
-
-            <h3
-              class="d-flex align-items-center mb-0 text-neutral-80 fs-8 fs-md-6 fw-bold"
-            >
-              尊爵雙人房
-            </h3>
-
-            <div class="text-neutral-80 fw-medium">
-              <p class="mb-2">住宿天數： 1 晚</p>
-              <p class="mb-0">住宿人數：2 位</p>
-            </div>
-
-            <div class="text-neutral-80 fs-8 fs-md-7 fw-medium">
-              <p class="title-deco mb-2">
-                入住：6 月 10 日星期二，15:00 可入住
-              </p>
-              <p class="title-deco mb-0">
-                退房：6 月 11 日星期三，12:00 前退房
-              </p>
-            </div>
-            <p class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-bold">NT$ 10,000</p>
-          </section>
-        </div>
+        </div> -->
 
         <button
           class="btn btn-outline-primary-100 py-4 fw-bold"

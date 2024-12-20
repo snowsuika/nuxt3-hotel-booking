@@ -3,6 +3,8 @@ export default function useOrder() {
   const token = useCookie('auth');
   const { $swal } = useNuxtApp();
 
+  const orderList = ref(null);
+
   const orderDetail = ref(null);
 
   const addOrder = async (options) => {
@@ -43,7 +45,6 @@ export default function useOrder() {
       throw new Error(error.response?._data?.message);
     }
   };
-
   const getOrderDetail = async (id) => {
     const { data, error } = await useFetch(
       `/orders/${id}`,
@@ -73,9 +74,44 @@ export default function useOrder() {
     orderDetail.value = data.value?.result;
   };
 
+  const getOrderList = async () => {
+    const { data, error } = await useFetch(
+      `/orders`,
+      {
+        baseURL,
+        headers: {
+          Authorization: `Bearer ${token.value}`
+        },
+
+        onResponseError({ response }) {
+          if (response?.status === 500) {
+            return navigateTo('/');
+          }
+
+          if (response?.status === 404) {
+            alert('房間資料取得錯誤');
+            return navigateTo('/404');
+          }
+
+          if (response && response.status === 401) {
+            alert('未授權的訪問，請重新登入');
+            router.replace('/login');
+          }
+        }
+      }
+    );
+    if (error.value) {
+      throw new Error(error.value?.data?.message);
+    }
+
+    orderList.value = data.value?.result;
+  };
+
   return {
     addOrder,
     getOrderDetail,
-    orderDetail
+    orderDetail,
+    getOrderList,
+    orderList
   };
 }
