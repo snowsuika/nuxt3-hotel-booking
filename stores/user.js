@@ -1,19 +1,47 @@
 export const useUserStore = defineStore('userStore', () => {
+  const token = useCookie('auth');
   const baseURL = 'http://localhost:3005/api/v1';
-  const userInfo = ref({});
+  const userInfo = ref(null);
 
-  const getUserInfo = async (token) => {
-    const data = await $fetch(`/user`, {
+  const getUserInfo = async () => {
+    const { data, error } = await useFetch(`/user`, {
       baseURL,
       headers: { Authorization: token },
-      transform: (data) => data.result
+      onResponseError({ response }) {
+        if (response?.status === 403) {
+          alert(response.message || '未授權的訪問，請重新登入');
+          return navigateTo('/login');
+        }
+      }
     });
 
-    userInfo.value = data.result;
+    if (error.value) {
+      throw error.value || '獲取用戶資料失敗';
+    }
+
+    userInfo.value = data.value?.result;
+    return data.value?.result;
+  };
+
+  const updateUserInfo = async (options) => {
+    const response = await $fetch(`/user`, {
+      method: 'PUT',
+      baseURL,
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      },
+      body: options
+    });
+
+    // update Store
+    userInfo.value = response.result;
+
+    return response.result;
   };
 
   return {
     userInfo,
-    getUserInfo
+    getUserInfo,
+    updateUserInfo
   };
 });

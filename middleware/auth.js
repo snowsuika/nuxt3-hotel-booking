@@ -1,6 +1,6 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
   const nuxtApp = useNuxtApp();
-  const { $swal } = useNuxtApp();
+  // const { $swal } = useNuxtApp();
   const token = useCookie('auth');
 
   const baseURL = 'http://localhost:3005/api/v1';
@@ -12,13 +12,15 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   }
 
   if (!token.value) {
-    await $swal.fire({
-      position: 'center',
-      icon: 'error',
-      title: '請重新登入',
-      timer: 3000,
-      showConfirmButton: false
-    });
+    console.log('no token');
+
+    // await $swal.fire({
+    //   position: 'center',
+    //   icon: 'error',
+    //   title: '請重新登入',
+    //   timer: 3000,
+    //   showConfirmButton: false
+    // });
     return navigateTo('/login');
   }
 
@@ -31,14 +33,16 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     });
   } catch (error) {
     const { message } = error.response._data;
+    console.log('error', error.response._data);
+
     token.value = null;
-    $swal.fire({
-      position: 'center',
-      icon: 'error',
-      timer: 3000,
-      title: message || '請重新登入',
-      showConfirmButton: false
-    });
+    // $swal.fire({
+    //   position: 'center',
+    //   icon: 'error',
+    //   timer: 3000,
+    //   title: message || '請重新登入',
+    //   showConfirmButton: false
+    // });
 
     return navigateTo('/login');
   }

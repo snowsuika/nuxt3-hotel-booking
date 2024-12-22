@@ -1,296 +1,495 @@
 <script setup>
 definePageMeta({
-  layout: 'user'
+  layout: 'user',
+  middleware: 'auth'
+});
+const { $swal } = useNuxtApp();
+
+const userStore = useUserStore();
+const { userInfo } = storeToRefs(userStore);
+const { getUserInfo, updateUserInfo } = userStore;
+
+const localUserInfo = ref(JSON.parse(JSON.stringify(userInfo.value)));
+
+const passwordForm = ref({
+  oldPassword: '',
+  newPassword: '',
+  confirmPassword: ''
 });
 
+// 生日年月日
+const selectedYear = ref(1);
+const selectedMonth = ref(1);
+const selectedDay = ref(1);
+
+selectedYear.value =
+  new Date(localUserInfo.value.birthday).getFullYear() - 1958;
+selectedMonth.value = new Date(localUserInfo.value.birthday).getMonth() + 1;
+selectedDay.value = new Date(localUserInfo.value.birthday).getDate();
+
+const fullBirthdayFormate = computed(() => {
+  const date = new Date(localUserInfo.value.birthday);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  return `${year} 年 ${month} 月 ${day} 日`;
+});
+
+// 選擇縣市區域取得郵遞區號
+const { $TWzipcode } = useNuxtApp();
+const twzipcodeRef = ref(null);
+let twzipcodeInstance = null;
+let zipcode = ref(null);
+let fullAddress = ref(null);
+
+onMounted(() => {
+  twzipcodeInstance = $TWzipcode(twzipcodeRef, {
+    district: {
+      onChange(id) {
+        const { county, district } = this.nth(id).get();
+        zipcode.value = this.nth(id).get()?.zipcode;
+        fullAddress.value = `${county}${district}${localUserInfo.value.address.detail}`;
+      }
+    },
+    combine: false
+  });
+
+  // 初始設定地址郵遞區號
+  const defaultZipcode = localUserInfo.value.address.zipcode.toString();
+  twzipcodeInstance.set(defaultZipcode);
+});
+
+// 更新密碼或個人資料
 const isEditPassword = ref(false);
 const isEditProfile = ref(false);
+
+const updateProfile = async (value = {}, { resetForm }) => {
+  try {
+    const options = {
+      userId: localUserInfo.value._id,
+      name: localUserInfo.value.name,
+      phone: localUserInfo.value.phone,
+      birthday: `${selectedYear.value + 1958}/${selectedMonth.value}/${
+        selectedDay.value
+      }`,
+      address: {
+        ...localUserInfo.value.address,
+        zipcode: Number(zipcode.value)
+      }
+    };
+
+    const resUserInfo = await updateUserInfo(options);
+
+    $swal.fire({
+      position: 'center',
+      icon: 'success',
+      title: '個人資料更新成功',
+      timer: 3000,
+      showConfirmButton: false
+    });
+
+    // update local user info
+    localUserInfo.value = { ...resUserInfo };
+
+    isEditProfile.value = false;
+  } catch (error) {
+    $swal.fire({
+      position: 'center',
+      icon: 'error',
+      title: error.data?.message || '個人資料更新失敗',
+      timer: 3000,
+      showConfirmButton: false
+    });
+
+    resetForm();
+  }
+};
+
+const updatePassword = async (value = {}, { resetForm }) => {
+  try {
+    if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
+      $swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: '新密碼與確認密碼不一致',
+        timer: 3000,
+        showConfirmButton: false
+      });
+      return;
+    }
+
+    await updateUserInfo({
+      userId: localUserInfo.value._id,
+      oldPassword: passwordForm.value.oldPassword,
+      newPassword: passwordForm.value.newPassword
+    });
+
+    $swal.fire({
+      position: 'center',
+      icon: 'success',
+      title: '密碼更新成功',
+      timer: 3000,
+      showConfirmButton: false
+    });
+
+    isEditPassword.value = false;
+  } catch (error) {
+    $swal.fire({
+      position: 'center',
+      icon: 'error',
+      title: error.data?.message || '密碼更新失敗',
+      timer: 3000,
+      showConfirmButton: false
+    });
+  } finally {
+    resetForm();
+  }
+};
 </script>
 
 <template>
   <div class="row gap-6 gap-md-0">
     <div class="col-12 col-md-5">
-      <section
-        class="rounded-3xl d-flex flex-column gap-6 gap-md-10 p-6 p-md-10 bg-neutral-0"
+      <VForm
+        v-slot="{ errors, meta, resetForm }"
+        @submit="updatePassword"
       >
-        <h2 class="fs-6 fs-md-5 fw-bold">修改密碼</h2>
-        <div class="d-flex flex-column gap-4 gap-md-6">
-          <div class="fs-8 fs-md-7">
-            <p class="mb-2 text-neutral-80 fw-medium">電子信箱</p>
-            <span
-              class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
-            >
-              Jessica@exsample.com
-            </span>
-          </div>
+        <section
+          class="rounded-3xl d-flex flex-column gap-6 gap-md-10 p-6 p-md-10 bg-neutral-0"
+        >
+          <h2 class="fs-6 fs-md-5 fw-bold">修改密碼</h2>
+          <div class="d-flex flex-column gap-4 gap-md-6">
+            <div class="fs-8 fs-md-7">
+              <p class="mb-2 text-neutral-80 fw-medium">電子信箱</p>
+              <span
+                class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
+              >
+                {{ localUserInfo.email }}
+              </span>
+            </div>
 
-          <div
-            class="d-flex justify-content-between align-items-center"
-            :class="{ 'd-none': isEditPassword }"
-          >
-            <div>
-              <label class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-medium">
-                密碼
-              </label>
-              <input
-                class="form-control pe-none p-0 text-neutral-100 fs-5 fs-md-3 fw-bold border-0"
-                type="password"
-                value="**********"
-              />
+            <div
+              class="d-flex justify-content-between align-items-center"
+              :class="{ 'd-none': isEditPassword }"
+            >
+              <div>
+                <label class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-medium">
+                  密碼
+                </label>
+                <input
+                  class="form-control pe-none p-0 text-neutral-100 fs-5 fs-md-3 fw-bold border-0"
+                  type="password"
+                  value="**********"
+                />
+              </div>
+
+              <button
+                class="flex-shrink-0 text-primary-100 fs-8 fs-md-7 fw-bold text-decoration-underline border-0 bg-transparent"
+                type="button"
+                @click="isEditPassword = !isEditPassword"
+              >
+                重設
+              </button>
+            </div>
+
+            <div
+              class="d-flex flex-column gap-4 gap-md-6"
+              :class="{ 'd-none': !isEditPassword }"
+            >
+              <div>
+                <label
+                  for="oldPassword"
+                  class="form-label fs-8 fs-md-7 fw-bold"
+                >
+                  舊密碼
+                </label>
+                <VField
+                  id="oldPassword"
+                  name="oldPassword"
+                  type="password"
+                  class="form-control p-4 fs-7 rounded-3"
+                  :class="{
+                    'is-invalid': errors.oldPassword
+                  }"
+                  v-model="passwordForm.oldPassword"
+                  placeholder="請輸入舊密碼"
+                  rules="required"
+                />
+                <VErrorMessage
+                  name="oldPassword"
+                  class="invalid-feedback"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="newPassword"
+                  class="form-label fs-8 fs-md-7 fw-bold"
+                >
+                  新密碼
+                </label>
+
+                <VField
+                  id="newPassword"
+                  name="newPassword"
+                  type="password"
+                  class="form-control p-4 fs-7 rounded-3"
+                  :class="{
+                    'is-invalid': errors.newPassword
+                  }"
+                  v-model="passwordForm.newPassword"
+                  placeholder="請輸入新密碼"
+                  rules="required"
+                />
+                <VErrorMessage
+                  name="newPassword"
+                  class="invalid-feedback"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="confirmPassword"
+                  class="form-label fs-8 fs-md-7 fw-bold"
+                >
+                  確認新密碼
+                </label>
+
+                <VField
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  class="form-control p-4 fs-7 rounded-3"
+                  :class="{
+                    'is-invalid': errors.confirmPassword
+                  }"
+                  v-model="passwordForm.confirmPassword"
+                  placeholder="請再輸入一次新密碼"
+                  rules="required"
+                />
+                <VErrorMessage
+                  name="confirmPassword"
+                  class="invalid-feedback"
+                />
+              </div>
             </div>
 
             <button
-              class="flex-shrink-0 text-primary-100 fs-8 fs-md-7 fw-bold text-decoration-underline border-0 bg-transparent"
-              type="button"
-              @click="isEditPassword = !isEditPassword"
+              :class="{ 'd-none': !isEditPassword }"
+              class="btn btn-neutral-40 align-self-md-start px-8 py-4 text-neutral-60 rounded-3"
+              type="submit"
+              :disabled="!meta.valid"
             >
-              重設
+              儲存設定
             </button>
           </div>
-
-          <div
-            class="d-flex flex-column gap-4 gap-md-6"
-            :class="{ 'd-none': !isEditPassword }"
-          >
-            <div>
-              <label
-                for="oldPassword"
-                class="form-label fs-8 fs-md-7 fw-bold"
-              >
-                舊密碼
-              </label>
-              <input
-                id="oldPassword"
-                type="password"
-                class="form-control p-4 fs-7 rounded-3"
-                placeholder="請輸入舊密碼"
-              />
-            </div>
-
-            <div>
-              <label
-                for="newPassword"
-                class="form-label fs-8 fs-md-7 fw-bold"
-              >
-                新密碼
-              </label>
-              <input
-                id="newPassword"
-                type="password"
-                class="form-control p-4 fs-7 rounded-3"
-                placeholder="請輸入新密碼"
-              />
-            </div>
-
-            <div>
-              <label
-                for="confirmPassword"
-                class="form-label fs-8 fs-md-7 fw-bold"
-              >
-                確認新密碼
-              </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                class="form-control p-4 fs-7 rounded-3"
-                placeholder="請再輸入一次新密碼"
-              />
-            </div>
-          </div>
-
-          <button
-            :class="{ 'd-none': !isEditPassword }"
-            class="btn btn-neutral-40 align-self-md-start px-8 py-4 text-neutral-60 rounded-3"
-            type="button"
-          >
-            儲存設定
-          </button>
-        </div>
-      </section>
+        </section>
+      </VForm>
     </div>
 
     <div class="col-12 col-md-7">
-      <section
-        class="rounded-3xl d-flex flex-column gap-6 gap-md-10 p-6 p-md-10 bg-neutral-0"
+      <VForm
+        v-slot="{ errors, meta, resetForm }"
+        @submit="updateProfile"
       >
-        <h2 class="fs-6 fs-md-5 fw-bold">基本資料</h2>
-        <div class="d-flex flex-column gap-4 gap-md-6">
-          <div class="fs-8 fs-md-7">
-            <label
-              class="form-label"
-              :class="{
-                'fw-bold text-neutral-100': isEditProfile,
-                'fw-medium text-neutral-80': !isEditProfile
-              }"
-              for="name"
-            >
-              姓名
-            </label>
-            <input
-              id="name"
-              name="name"
-              class="form-control text-neutral-100 fw-bold"
-              :class="{
-                'pe-none p-0 border-0': !isEditProfile,
-                'p-4': isEditProfile
-              }"
-              type="text"
-              value="Jessica Ｗang"
-            />
-          </div>
+        <section
+          class="rounded-3xl d-flex flex-column gap-6 gap-md-10 p-6 p-md-10 bg-neutral-0"
+        >
+          <h2 class="fs-6 fs-md-5 fw-bold">基本資料</h2>
 
-          <div class="fs-8 fs-md-7">
-            <label
-              class="form-label"
-              :class="{
-                'fw-bold text-neutral-100': isEditProfile,
-                'fw-medium text-neutral-80': !isEditProfile
-              }"
-              for="phone"
-            >
-              手機號碼
-            </label>
-            <input
-              id="phone"
-              name="phone"
-              class="form-control text-neutral-100 fw-bold"
-              :class="{
-                'pe-none p-0 border-0': !isEditProfile,
-                'p-4': isEditProfile
-              }"
-              type="tel"
-              value="+886 912 345 678"
-            />
-          </div>
-
-          <div class="fs-8 fs-md-7">
-            <label
-              class="form-label"
-              :class="{
-                'fw-bold text-neutral-100': isEditProfile,
-                'fw-medium text-neutral-80': !isEditProfile
-              }"
-              for="birth"
-            >
-              生日
-            </label>
-            <span
-              class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
-              :class="{ 'd-none': isEditProfile }"
-            >
-              1990 年 8 月 15 日
-            </span>
-            <div
-              class="d-flex gap-2"
-              :class="{ 'd-none': !isEditProfile }"
-            >
-              <select
-                id="birth"
-                class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+          <div class="d-flex flex-column gap-4 gap-md-6">
+            <div class="fs-8 fs-md-7">
+              <label
+                class="form-label"
+                :class="{
+                  'fw-bold text-neutral-100': isEditProfile,
+                  'fw-medium text-neutral-80': !isEditProfile
+                }"
+                for="name"
               >
-                <option
-                  v-for="year in 65"
-                  :key="year"
-                  value="`${year + 1958} 年`"
-                >
-                  {{ year + 1958 }} 年
-                </option>
-              </select>
-              <select
-                class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-              >
-                <option
-                  v-for="month in 12"
-                  :key="month"
-                  value="`${month} 月`"
-                >
-                  {{ month }} 月
-                </option>
-              </select>
-              <select
-                class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-              >
-                <option
-                  v-for="day in 30"
-                  :key="day"
-                  value="`${day} 日`"
-                >
-                  {{ day }} 日
-                </option>
-              </select>
+                姓名
+              </label>
+              <VField
+                id="name"
+                name="name"
+                class="form-control text-neutral-100 fw-bold"
+                :class="{
+                  'pe-none p-0 border-0': !isEditProfile,
+                  'p-4': isEditProfile,
+                  'is-invalid': errors.name
+                }"
+                v-model="localUserInfo.name"
+                placeholder="請輸入姓名"
+                rules="required"
+              />
+              <VErrorMessage
+                name="name"
+                class="invalid-feedback"
+              />
             </div>
-          </div>
 
-          <div class="fs-8 fs-md-7">
-            <label
-              class="form-label"
-              :class="{
-                'fw-bold text-neutral-100': isEditProfile,
-                'fw-medium text-neutral-80': !isEditProfile
-              }"
-              for="address"
-            >
-              地址
-            </label>
-            <span
-              class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
-              :class="{ 'd-none': isEditProfile }"
-            >
-              高雄市新興區六角路 123 號
-            </span>
-            <div :class="{ 'd-none': !isEditProfile }">
-              <div class="d-flex gap-2 mb-2">
+            <div class="fs-8 fs-md-7">
+              <label
+                class="form-label"
+                :class="{
+                  'fw-bold text-neutral-100': isEditProfile,
+                  'fw-medium text-neutral-80': !isEditProfile
+                }"
+                for="phone"
+              >
+                手機號碼
+              </label>
+              <VField
+                id="phone"
+                name="phone"
+                class="form-control text-neutral-100 fw-bold"
+                :class="{
+                  'pe-none p-0 border-0': !isEditProfile,
+                  'p-4': isEditProfile,
+                  'is-invalid': errors.phone
+                }"
+                placeholder="請輸入手機號碼"
+                rules="required|phone"
+                type="tel"
+                v-model="localUserInfo.phone"
+              />
+              <VErrorMessage
+                name="phone"
+                class="invalid-feedback"
+              />
+            </div>
+
+            <div class="fs-8 fs-md-7">
+              <label
+                class="form-label"
+                :class="{
+                  'fw-bold text-neutral-100': isEditProfile,
+                  'fw-medium text-neutral-80': !isEditProfile
+                }"
+                for="birth"
+              >
+                生日
+              </label>
+              <span
+                class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
+                :class="{ 'd-none': isEditProfile }"
+              >
+                {{ fullBirthdayFormate }}
+              </span>
+              <div
+                class="d-flex gap-2"
+                :class="{ 'd-none': !isEditProfile }"
+              >
                 <select
+                  v-model="selectedYear"
+                  id="birth"
                   class="form-select p-4 text-neutral-80 fw-medium rounded-3"
                 >
-                  <option value="臺北市">臺北市</option>
-                  <option value="臺中市">臺中市</option>
                   <option
-                    selected
-                    value="高雄市"
+                    v-for="year in 65"
+                    :key="year"
+                    :value="year"
                   >
-                    高雄市
+                    {{ year + 1958 }} 年
                   </option>
                 </select>
                 <select
+                  v-model="selectedMonth"
                   class="form-select p-4 text-neutral-80 fw-medium rounded-3"
                 >
-                  <option value="前金區">前金區</option>
-                  <option value="鹽埕區">鹽埕區</option>
                   <option
-                    selected
-                    value="新興區"
+                    v-for="month in 12"
+                    :key="month"
+                    :value="month"
                   >
-                    新興區
+                    {{ month }} 月
+                  </option>
+                </select>
+                <select
+                  v-model="selectedDay"
+                  class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+                >
+                  <option
+                    v-for="day in 30"
+                    :key="day"
+                    :value="day"
+                  >
+                    {{ day }} 日
                   </option>
                 </select>
               </div>
-              <input
-                id="address"
-                type="text"
-                class="form-control p-4 rounded-3"
-                placeholder="請輸入詳細地址"
-              />
+            </div>
+
+            <div class="fs-8 fs-md-7">
+              <label
+                class="form-label"
+                :class="{
+                  'fw-bold text-neutral-100': isEditProfile,
+                  'fw-medium text-neutral-80': !isEditProfile
+                }"
+                for="address"
+              >
+                地址
+              </label>
+              <span
+                class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
+                :class="{ 'd-none': isEditProfile }"
+              >
+                {{ fullAddress }}
+              </span>
+              <div :class="{ 'd-none': !isEditProfile }">
+                <div
+                  ref="twzipcodeRef"
+                  class="twzipcode d-flex gap-2 mb-2"
+                >
+                  <select
+                    data-role="county"
+                    class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+                  ></select>
+                  <select
+                    data-role="district"
+                    class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+                  ></select>
+                  <input
+                    type="hidden"
+                    data-role="zipcode"
+                  />
+                </div>
+                <VField
+                  id="address"
+                  name="address"
+                  rules="required"
+                  type="text"
+                  class="form-control p-4 rounded-3"
+                  :class="{ 'is-invalid': errors.address }"
+                  placeholder="請輸入詳細地址"
+                  v-model="localUserInfo.address.detail"
+                />
+                <VErrorMessage
+                  name="address"
+                  class="invalid-feedback"
+                />
+              </div>
             </div>
           </div>
-        </div>
-        <button
-          :class="{ 'd-none': isEditProfile }"
-          class="btn btn-outline-primary-100 align-self-start px-8 py-4 rounded-3"
-          type="button"
-          @click="isEditProfile = !isEditProfile"
-        >
-          編輯
-        </button>
-
-        <button
-          :class="{ 'd-none': !isEditProfile }"
-          class="btn btn-neutral-40 align-self-md-start px-8 py-4 text-neutral-60 rounded-3"
-          type="button"
-        >
-          儲存設定
-        </button>
-      </section>
+          <button
+            :class="{ 'd-none': isEditProfile }"
+            class="btn btn-outline-primary-100 align-self-start px-8 py-4 rounded-3"
+            type="button"
+            @click="isEditProfile = !isEditProfile"
+          >
+            編輯
+          </button>
+          <button
+            :class="{ 'd-none': !isEditProfile }"
+            class="btn btn-neutral-40 align-self-md-start px-8 py-4 text-neutral-60 rounded-3"
+            type="submit"
+          >
+            儲存設定
+          </button>
+        </section>
+      </VForm>
     </div>
   </div>
 </template>
