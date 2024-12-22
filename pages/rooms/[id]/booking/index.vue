@@ -5,7 +5,7 @@ definePageMeta({
 
 const route = useRoute();
 const router = useRouter();
-const { $swal } = useNuxtApp();
+const { showSuccessAlert, showErrorAlert } = useAlert();
 const { $priceCommaFormat } = useNuxtApp();
 import BookingLoading from '@/components/rooms/BookingLoading.vue';
 
@@ -78,13 +78,7 @@ const onSubmitReservation = async () => {
       `/rooms/${route.params?.id}/booking/result?order_id=${bookingResult._id}`
     );
   } catch (error) {
-    await $swal.fire({
-      position: 'center',
-      icon: 'error',
-      title: error.message || '預訂失敗',
-      timer: 3000,
-      showConfirmButton: false
-    });
+    await showErrorAlert(error.message || '預訂失敗');
   } finally {
     isLoading.value = false;
   }

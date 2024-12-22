@@ -2,6 +2,8 @@ export const useUserStore = defineStore('userStore', () => {
   const token = useCookie('auth');
   const runtimeConfig = useRuntimeConfig();
   const baseURL = runtimeConfig.public.apiBase;
+  const { showSuccessAlert, showErrorAlert } = useAlert();
+
   const userInfo = ref(null);
 
   const getUserInfo = async () => {
@@ -10,7 +12,7 @@ export const useUserStore = defineStore('userStore', () => {
       headers: { Authorization: token },
       onResponseError({ response }) {
         if (response?.status === 403) {
-          alert(response.message || '未授權的訪問，請重新登入');
+          showErrorAlert(response.message || '未授權的訪問，請重新登入');
           return navigateTo('/login');
         }
       }

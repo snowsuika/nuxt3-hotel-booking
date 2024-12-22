@@ -1,34 +1,31 @@
 export default function useOrder() {
-  const runtimeConfig = useRuntimeConfig()
+  const runtimeConfig = useRuntimeConfig();
   const baseURL = runtimeConfig.public.apiBase;
   const token = useCookie('auth');
-  const { $swal } = useNuxtApp();
+  const { showSuccessAlert, showErrorAlert } = useAlert();
 
   const orderList = ref(null);
   const orderDetail = ref(null);
 
   const getOrderDetail = async (id) => {
-    const { data, error } = await useFetch(
-      `/orders/${id}`,
-      {
-        baseURL,
-        headers: {
-          Authorization: `Bearer ${token.value}`
-        },
+    const { data, error } = await useFetch(`/orders/${id}`, {
+      baseURL,
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      },
 
-        onResponseError({ response }) {
-          if (response?.status === 404) {
-            alert('房間資料取得錯誤');
-            return navigateTo('/404');
-          }
+      onResponseError({ response }) {
+        if (response?.status === 404) {
+          showErrorAlert('房間資料取得錯誤');
+          return navigateTo('/404');
+        }
 
-          if (response && response.status === 401) {
-            alert('未授權的訪問，請重新登入');
-            router.replace('/login');
-          }
+        if (response && response.status === 401) {
+          showErrorAlert('未授權的訪問，請重新登入');
+          router.replace('/login');
         }
       }
-    );
+    });
     if (error.value) {
       throw new Error(error.value?.data?.message);
     }
@@ -36,31 +33,28 @@ export default function useOrder() {
     orderDetail.value = data.value?.result;
   };
   const getOrderList = async () => {
-    const { data, error } = await useFetch(
-      `/orders`,
-      {
-        baseURL,
-        headers: {
-          Authorization: `Bearer ${token.value}`
-        },
+    const { data, error } = await useFetch(`/orders`, {
+      baseURL,
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      },
 
-        onResponseError({ response }) {
-          if (response?.status === 500) {
-            return navigateTo('/');
-          }
+      onResponseError({ response }) {
+        if (response?.status === 500) {
+          return navigateTo('/');
+        }
 
-          if (response?.status === 404) {
-            alert('房間資料取得錯誤');
-            return navigateTo('/404');
-          }
+        if (response?.status === 404) {
+          showErrorAlert('房間資料取得錯誤');
+          return navigateTo('/404');
+        }
 
-          if (response && response.status === 401) {
-            alert('未授權的訪問，請重新登入');
-            router.replace('/login');
-          }
+        if (response && response.status === 401) {
+          showErrorAlert('未授權的訪問，請重新登入');
+          router.replace('/login');
         }
       }
-    );
+    });
     if (error.value) {
       throw new Error(error.value?.data?.message);
     }
@@ -82,23 +76,14 @@ export default function useOrder() {
     } catch (error) {
       // 處理錯誤狀態
       if (error.response?.status === 404) {
-        $swal.fire({
-          position: 'center',
-          icon: 'error',
-          title: error.response?._data?.message || '房型不存在',
-          timer: 3000,
-          showConfirmButton: false
-        });
+        showErrorAlert(error.response?._data?.message || '房型不存在');
       }
 
       if (error.response?.status === 401) {
-        $swal.fire({
-          position: 'center',
-          icon: 'error',
-          title: error.response?._data?.message || '未授權的訪問，請重新登入',
-          timer: 3000,
-          showConfirmButton: false
-        });
+        showErrorAlert(
+          error.response?._data?.message || '未授權的訪問，請重新登入'
+        );
+
         router.replace('/login');
       }
 
@@ -119,23 +104,14 @@ export default function useOrder() {
     } catch (error) {
       // 處理錯誤狀態
       if (error.response?.status === 404) {
-        $swal.fire({
-          position: 'center',
-          icon: 'error',
-          title: error.response?._data?.message || '房型不存在',
-          timer: 3000,
-          showConfirmButton: false
-        });
+        showErrorAlert(error.response?._data?.message || '房型不存在');
       }
 
       if (error.response?.status === 401) {
-        $swal.fire({
-          position: 'center',
-          icon: 'error',
-          title: error.response?._data?.message || '未授權的訪問，請重新登入',
-          timer: 3000,
-          showConfirmButton: false
-        });
+        showErrorAlert(
+          error.response?._data?.message || '未授權的訪問，請重新登入'
+        );
+
         router.replace('/login');
       }
 

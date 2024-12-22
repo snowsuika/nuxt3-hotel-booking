@@ -470,7 +470,7 @@ const handleReservation = () => {
             type="submit"
             class="btn btn-primary-100 px-12 py-4 text-neutral-0 fw-bold rounded-3"
           >
-            立即預訂 123
+            立即預訂
           </button>
         </template>
       </div>

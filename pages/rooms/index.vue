@@ -1,6 +1,7 @@
 <script setup>
 const { $priceCommaFormat } = useNuxtApp();
 const { roomList, getRoomList } = useRoom();
+const { showSuccessAlert, showErrorAlert } = useAlert();
 
 /**
  * Swiper
@@ -25,7 +26,7 @@ const roomSwiperOptions = {
 try {
   await getRoomList();
 } catch (error) {
-  alert(error);
+  showErrorAlert(error);
 }
 </script>
 

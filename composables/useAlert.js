@@ -1,35 +1,29 @@
 export const useAlert = () => {
   const { $swal } = useNuxtApp();
 
-  const showAlert = ({ icon, title, text, timer }) => {
-    return $swal.fire({
-      position: 'center',
-      icon,
-      title,
-      text,
-      showConfirmButton: !timer,
-      timer
-    });
+  const defaultOptions = {
+    timer: 3000,
+    position: 'center',
+    showConfirmButton: false
   };
 
-  const showSuccessAlert = (title, timer = 1500) => {
-    return showAlert({
+  const showSuccessAlert = (title) => {
+    return $swal.fire({
       icon: 'success',
       title,
-      timer
+      ...defaultOptions
     });
   };
 
-  const showErrorAlert = (title, timer = 1500) => {
-    return showAlert({
+  const showErrorAlert = (title) => {
+    return $swal.fire({
       icon: 'error',
       title,
-      timer
+      ...defaultOptions
     });
   };
 
   return {
-    showAlert,
     showSuccessAlert,
     showErrorAlert
   };

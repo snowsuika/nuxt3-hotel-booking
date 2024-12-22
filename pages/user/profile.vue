@@ -3,7 +3,7 @@ definePageMeta({
   layout: 'user',
   middleware: 'auth'
 });
-const { $swal } = useNuxtApp();
+const { showSuccessAlert, showErrorAlert } = useAlert();
 
 const userStore = useUserStore();
 const { userInfo } = storeToRefs(userStore);
@@ -81,26 +81,14 @@ const updateProfile = async (value = {}, { resetForm }) => {
 
     const resUserInfo = await updateUserInfo(options);
 
-    $swal.fire({
-      position: 'center',
-      icon: 'success',
-      title: '個人資料更新成功',
-      timer: 3000,
-      showConfirmButton: false
-    });
+    await showSuccessAlert('個人資料更新成功');
 
     // update local user info
     localUserInfo.value = { ...resUserInfo };
 
     isEditProfile.value = false;
   } catch (error) {
-    $swal.fire({
-      position: 'center',
-      icon: 'error',
-      title: error.data?.message || '個人資料更新失敗',
-      timer: 3000,
-      showConfirmButton: false
-    });
+    await showErrorAlert(error.data?.message || '個人資料更新失敗');
 
     resetForm();
   }
@@ -109,13 +97,8 @@ const updateProfile = async (value = {}, { resetForm }) => {
 const updatePassword = async (value = {}, { resetForm }) => {
   try {
     if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-      $swal.fire({
-        position: 'center',
-        icon: 'error',
-        title: '新密碼與確認密碼不一致',
-        timer: 3000,
-        showConfirmButton: false
-      });
+      await showErrorAlert('新密碼與確認密碼不一致');
+
       return;
     }
 
@@ -125,23 +108,11 @@ const updatePassword = async (value = {}, { resetForm }) => {
       newPassword: passwordForm.value.newPassword
     });
 
-    $swal.fire({
-      position: 'center',
-      icon: 'success',
-      title: '密碼更新成功',
-      timer: 3000,
-      showConfirmButton: false
-    });
+    await showSuccessAlert('密碼更新成功');
 
     isEditPassword.value = false;
   } catch (error) {
-    $swal.fire({
-      position: 'center',
-      icon: 'error',
-      title: error.data?.message || '密碼更新失敗',
-      timer: 3000,
-      showConfirmButton: false
-    });
+    await showErrorAlert(error.data?.message || '密碼更新失敗');
   } finally {
     resetForm();
   }
@@ -485,6 +456,7 @@ const updatePassword = async (value = {}, { resetForm }) => {
             :class="{ 'd-none': !isEditProfile }"
             class="btn btn-neutral-40 align-self-md-start px-8 py-4 text-neutral-60 rounded-3"
             type="submit"
+            :disabled="!meta.valid"
           >
             儲存設定
           </button>

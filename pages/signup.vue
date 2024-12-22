@@ -20,7 +20,7 @@ const selectedDay = ref(1);
 
 const vaildEmailAndPassward = async () => {
   if (userSignupObject.value.password !== confirmPassword.value) {
-    await showErrorAlert('兩次密碼不同');
+    showErrorAlert('兩次密碼不同');
     return;
   }
 
@@ -29,7 +29,7 @@ const vaildEmailAndPassward = async () => {
 
 const preSubmitSignup = async () => {
   if (!isAgreementCheck.value) {
-    await showErrorAlert('請閱讀並同意本網站個資使用規範');
+    showErrorAlert('請閱讀並同意本網站個資使用規範');
     return;
   }
 
@@ -42,7 +42,7 @@ const preSubmitSignup = async () => {
     await showSuccessAlert('註冊成功');
     router.push('/');
   } catch (error) {
-    await showErrorAlert(error);
+    showErrorAlert(error);
   } finally {
     emailPasswardFormRef.value.resetForm();
     personalInfoFormRef.value.resetForm();

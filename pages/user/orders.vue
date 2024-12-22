@@ -5,7 +5,7 @@ definePageMeta({
 
 const { orderList, getOrderList, deleteOrder } = useOrder();
 const { $priceCommaFormat } = useNuxtApp();
-const { $swal } = useNuxtApp();
+const { showSuccessAlert, showErrorAlert } = useAlert();
 
 import { weekDateFormate } from '@/utils/date.js';
 import { getDaysCount } from '@/utils/daysCount.js';
@@ -48,16 +48,10 @@ const handleCancelOrder = async () => {
     const res = await deleteOrder(latestOrder.value._id);
 
     if (res.status) {
-      $swal.fire({
-        position: 'center',
-        icon: 'success',
-        title: '取消成功',
-        timer: 3000,
-        showConfirmButton: false
-      });
+      await showSuccessAlert('取消成功');
     }
   } catch (error) {
-    alert(error);
+    await showErrorAlert(error);
   } finally {
     cancelModal.hide();
   }
