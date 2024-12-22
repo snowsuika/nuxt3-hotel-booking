@@ -2,6 +2,7 @@
 definePageMeta({
   layout: 'user'
 });
+const router = useRouter();
 const isLoading = useState('loading');
 
 const { orderList, getOrderList, deleteOrder } = useOrder();
@@ -14,6 +15,10 @@ import { getDaysCount } from '@/utils/daysCount.js';
 try {
   isLoading.value = true;
   await getOrderList();
+  if (orderList.value.length === 0) {
+    showErrorAlert('尚未有訂單');
+    router.back();
+  }
 } catch (error) {
   showErrorAlert(error);
 } finally {
