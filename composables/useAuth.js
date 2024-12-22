@@ -1,7 +1,6 @@
 export const useAuth = () => {
-  const { showSuccessAlert, showErrorAlert } = useAlert();
-  const router = useRouter();
   const baseURL = 'http://localhost:3005/api/v1';
+  const router = useRouter();
   const isEnabled = ref(false);
 
   const userLoginObject = ref({
@@ -15,31 +14,32 @@ export const useAuth = () => {
     isEnabled.value = true;
 
     try {
-      const { data, error } = await useFetch('/user/login', {
+      const data = await $fetch('/user/login', {
         baseURL,
         method: 'POST',
         body: userLoginObject.value,
 
         onResponseError({ response }) {
-          const errorMessage = response?._data?.message || '登入失敗';
+          if (response?.status === 400) {
+            throw response?._data?.message || '密碼錯誤';
+          }
 
-          throw new Error(errorMessage);
+          if (response && response.status === 404) {
+            router.push('/');
+            throw response?._data?.message || '此使用者不存在';
+          }
         }
       });
 
-      if (error.value) {
-        throw error.value;
+      if (data?.status) {
+        setAuthCookie(data.token);
+        router.push('/');
+
+        return { success: true };
       }
-
-      if (data.value?.status) {
-        setAuthCookie(data.value.token);
-
-        await showSuccessAlert('登入成功');
-        await router.push('/');
-      }
-
     } catch (error) {
-      await showErrorAlert(error);
+      console.log('error', error);
+      throw error;
     } finally {
       isEnabled.value = false;
     }

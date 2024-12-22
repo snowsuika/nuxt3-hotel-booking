@@ -1,6 +1,8 @@
 <script setup>
 const route = useRoute();
 const router = useRouter();
+const { showSuccessAlert, showErrorAlert } = useAlert();
+
 const transparentBgRoute = ['index', 'rooms'];
 
 const isTransparentRoute = computed(() =>
@@ -27,12 +29,13 @@ const { userInfo } = storeToRefs(userStore);
 const { getUserInfo } = userStore;
 
 if (token.value) {
-  await getUserInfo(token.value);
+  await getUserInfo();
 }
 
 const signout = () => {
   token.value = null;
-  router.push('/')
+  showSuccessAlert('登出成功');
+  router.push('/');
 };
 </script>
 

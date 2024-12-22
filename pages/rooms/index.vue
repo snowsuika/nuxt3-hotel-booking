@@ -1,5 +1,5 @@
 <script setup>
-const { $priceCommaFormat } = useNuxtApp()
+const { $priceCommaFormat } = useNuxtApp();
 const { roomList, getRoomList } = useRoom();
 
 /**
@@ -7,7 +7,7 @@ const { roomList, getRoomList } = useRoom();
  */
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 const baseSwiperOptions = {
-  slidesPerView: 1,
+  // slidesPerView: 1,
   pagination: { clickable: true },
   navigation: { enabled: true },
   autoplay: { delay: 0, disableOnInteraction: false },
@@ -25,7 +25,7 @@ const roomSwiperOptions = {
 try {
   await getRoomList();
 } catch (error) {
-  alert(error)
+  alert(error);
 }
 </script>
 

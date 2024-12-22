@@ -61,7 +61,8 @@ onMounted(() => {
           this.nth(id).get()?.zipcode
         );
       }
-    }
+    },
+    combine: false
   });
 });
 </script>
@@ -196,7 +197,6 @@ onMounted(() => {
         >
           下一步
         </button>
-        {{ meta.valid }}
       </VForm>
       <VForm
         v-slot="{ errors, meta, resetForm }"

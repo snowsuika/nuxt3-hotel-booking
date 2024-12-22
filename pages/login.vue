@@ -1,8 +1,20 @@
 <script setup>
+const { showSuccessAlert, showErrorAlert } = useAlert();
 const { isEnabled, userLoginObject, loginAccount } = useAuth();
 definePageMeta({
   layout: 'auth'
 });
+
+const handleLogin = async (value = {}, { resetForm }) => {
+  try {
+    await loginAccount(userLoginObject);
+    showSuccessAlert('登入成功');
+  } catch (error) {
+    showErrorAlert(error);
+  } finally {
+    resetForm();
+  }
+};
 </script>
 
 <template>
@@ -16,7 +28,7 @@ definePageMeta({
 
     <VForm
       v-slot="{ errors, meta, resetForm }"
-      @submit="loginAccount"
+      @submit="handleLogin"
       class="mb-10"
     >
       <div class="mb-4 fs-8 fs-md-7">
