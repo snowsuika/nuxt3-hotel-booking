@@ -92,7 +92,7 @@ export default function useOrder() {
   };
   const deleteOrder = async (id) => {
     try {
-      const result = await $fetch(`/orders/${id}`, {
+      const res = await $fetch(`/orders/${id}`, {
         method: 'DELETE',
         baseURL,
         headers: {
@@ -100,7 +100,9 @@ export default function useOrder() {
         }
       });
 
-      return result;
+      orderList.value = orderList.value.filter(order => order._id !== res?.result?._id);
+      return res;
+
     } catch (error) {
       // 處理錯誤狀態
       if (error.response?.status === 404) {
