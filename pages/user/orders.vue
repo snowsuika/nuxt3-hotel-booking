@@ -28,8 +28,6 @@ const daysCount = computed(() => {
   return getDaysCount(checkInDate, checkOutDate);
 });
 
-console.log('orderList', orderList.value);
-
 /**
  * 取消訂單
  */
@@ -235,78 +233,6 @@ const handleCancelOrder = async () => {
             class="my-0 opacity-100 text-neutral-40"
           />
         </template>
-
-        <!-- <div class="d-flex flex-column flex-lg-row gap-6">
-          <img
-            class="img-fluid object-fit-cover rounded-3"
-            style="max-width: 120px; height: 80px"
-            src="@/assets/images/room-b-sm-1.png"
-            alt="room-a"
-          />
-          <section class="d-flex flex-column gap-4">
-            <p class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-medium">
-              預訂參考編號： HH2302183151222
-            </p>
-
-            <h3
-              class="d-flex align-items-center mb-0 text-neutral-80 fs-8 fs-md-6 fw-bold"
-            >
-              尊爵雙人房
-            </h3>
-
-            <div class="text-neutral-80 fw-medium">
-              <p class="mb-2">住宿天數： 1 晚</p>
-              <p class="mb-0">住宿人數：2 位</p>
-            </div>
-
-            <div class="text-neutral-80 fs-8 fs-md-7 fw-medium">
-              <p class="title-deco mb-2">
-                入住：6 月 10 日星期二，15:00 可入住
-              </p>
-              <p class="title-deco mb-0">
-                退房：6 月 11 日星期三，12:00 前退房
-              </p>
-            </div>
-            <p class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-bold">NT$ 10,000</p>
-          </section>
-        </div>
-
-        <hr class="my-0 opacity-100 text-neutral-40" />
-
-        <div class="d-flex flex-column flex-lg-row gap-6">
-          <img
-            class="img-fluid object-fit-cover rounded-3"
-            style="max-width: 120px; height: 80px"
-            src="@/assets/images/room-b-sm-1.png"
-            alt="room-a"
-          />
-          <section class="d-flex flex-column gap-4">
-            <p class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-medium">
-              預訂參考編號： HH2302183151222
-            </p>
-
-            <h3
-              class="d-flex align-items-center mb-0 text-neutral-80 fs-8 fs-md-6 fw-bold"
-            >
-              尊爵雙人房
-            </h3>
-
-            <div class="text-neutral-80 fw-medium">
-              <p class="mb-2">住宿天數： 1 晚</p>
-              <p class="mb-0">住宿人數：2 位</p>
-            </div>
-
-            <div class="text-neutral-80 fs-8 fs-md-7 fw-medium">
-              <p class="title-deco mb-2">
-                入住：6 月 10 日星期二，15:00 可入住
-              </p>
-              <p class="title-deco mb-0">
-                退房：6 月 11 日星期三，12:00 前退房
-              </p>
-            </div>
-            <p class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-bold">NT$ 10,000</p>
-          </section>
-        </div> -->
 
         <button
           class="btn btn-outline-primary-100 py-4 fw-bold"
