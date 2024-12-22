@@ -1,5 +1,6 @@
 export default function useOrder() {
-  const baseURL = 'http://localhost:3005/api/v1';
+  const runtimeConfig = useRuntimeConfig()
+  const baseURL = runtimeConfig.public.apiBase;
   const token = useCookie('auth');
   const { $swal } = useNuxtApp();
 

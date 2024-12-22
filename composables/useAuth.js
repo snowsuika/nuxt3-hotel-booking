@@ -1,5 +1,6 @@
 export const useAuth = () => {
-  const baseURL = 'http://localhost:3005/api/v1';
+  const runtimeConfig = useRuntimeConfig()
+  const baseURL = runtimeConfig.public.apiBase;
   const router = useRouter();
   const isEnabled = ref(false);
 
@@ -38,7 +39,6 @@ export const useAuth = () => {
         return { success: true };
       }
     } catch (error) {
-      console.log('error', error);
       throw error;
     } finally {
       isEnabled.value = false;

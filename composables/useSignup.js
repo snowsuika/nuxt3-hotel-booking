@@ -1,5 +1,6 @@
 export const useSignup = () => {
-  const baseURL = 'http://localhost:3005/api/v1';
+  const runtimeConfig = useRuntimeConfig()
+  const baseURL = runtimeConfig.public.apiBase;
 
   const userSignupObject = ref({
     name: '',

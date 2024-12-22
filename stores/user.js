@@ -1,6 +1,7 @@
 export const useUserStore = defineStore('userStore', () => {
   const token = useCookie('auth');
-  const baseURL = 'http://localhost:3005/api/v1';
+  const runtimeConfig = useRuntimeConfig();
+  const baseURL = runtimeConfig.public.apiBase;
   const userInfo = ref(null);
 
   const getUserInfo = async () => {

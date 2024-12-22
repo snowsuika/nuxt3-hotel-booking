@@ -57,7 +57,7 @@ const handleCancelOrder = async () => {
       });
     }
   } catch (error) {
-    console.log(error);
+    alert(error);
   } finally {
     cancelModal.hide();
   }

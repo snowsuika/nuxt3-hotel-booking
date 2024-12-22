@@ -1,8 +1,9 @@
 export default function useRoom() {
+  const runtimeConfig = useRuntimeConfig()
+  const baseURL = runtimeConfig.public.apiBase;
+
   const roomList = ref([]);
   const roomDetail = ref(null);
-
-  const baseURL = 'http://localhost:3005/api/v1';
 
   // Room List
   const getRoomList = async () => {

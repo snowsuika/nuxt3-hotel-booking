@@ -11,8 +11,6 @@ const { roomDetail, getRoomDetail } = useRoom();
 try {
   await getRoomDetail(roomId);
 } catch (error) {
-  console.log('error', error);
-  // TODO: 加上 notify 或是 Alert
   navigateTo('/rooms');
 }
 

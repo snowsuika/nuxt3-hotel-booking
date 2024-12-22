@@ -3,7 +3,8 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   // const { $swal } = useNuxtApp();
   const token = useCookie('auth');
 
-  const baseURL = 'http://localhost:3005/api/v1';
+  const runtimeConfig = useRuntimeConfig()
+  const baseURL = runtimeConfig.public.apiBase;
 
   const isClient = import.meta?.client ?? process.client;
 
@@ -12,8 +13,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   }
 
   if (!token.value) {
-    console.log('no token');
-
     // await $swal.fire({
     //   position: 'center',
     //   icon: 'error',
@@ -33,8 +32,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     });
   } catch (error) {
     const { message } = error.response._data;
-    console.log('error', error.response._data);
-
     token.value = null;
     // $swal.fire({
     //   position: 'center',
