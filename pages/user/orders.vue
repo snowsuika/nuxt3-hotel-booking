@@ -2,6 +2,7 @@
 definePageMeta({
   layout: 'user'
 });
+const isLoading = useState('loading');
 
 const { orderList, getOrderList, deleteOrder } = useOrder();
 const { $priceCommaFormat } = useNuxtApp();
@@ -10,7 +11,14 @@ const { showSuccessAlert, showErrorAlert } = useAlert();
 import { weekDateFormate } from '@/utils/date.js';
 import { getDaysCount } from '@/utils/daysCount.js';
 
-await getOrderList();
+try {
+  isLoading.value = true;
+  await getOrderList();
+} catch (error) {
+  showErrorAlert(error);
+} finally {
+  isLoading.value = false;
+}
 
 const latestOrder = computed(() => {
   return orderList.value[orderList.value.length - 1];

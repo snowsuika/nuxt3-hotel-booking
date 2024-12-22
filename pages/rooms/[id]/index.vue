@@ -1,6 +1,7 @@
 <script setup>
 const route = useRoute();
 const { $priceCommaFormat } = useNuxtApp();
+const isLoading = useState('loading');
 
 /**
  * Room Detail Data
@@ -9,9 +10,12 @@ const roomId = route.params?.id;
 const { roomDetail, getRoomDetail } = useRoom();
 
 try {
+  isLoading.value = true;
   await getRoomDetail(roomId);
 } catch (error) {
   navigateTo('/rooms');
+} finally {
+  isLoading.value = false;
 }
 
 /**

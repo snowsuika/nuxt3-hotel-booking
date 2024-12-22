@@ -1,18 +1,23 @@
 <script setup>
 const { showSuccessAlert, showErrorAlert } = useAlert();
-const { isEnabled, userLoginObject, loginAccount } = useAuth();
+const { userLoginObject, loginAccount } = useAuth();
+const isLoading = useState('loading');
+
+
 definePageMeta({
   layout: 'auth'
 });
 
 const handleLogin = async (value = {}, { resetForm }) => {
   try {
+    isLoading.value = true;
     await loginAccount(userLoginObject);
     showSuccessAlert('登入成功');
   } catch (error) {
     showErrorAlert(error);
   } finally {
     resetForm();
+    isLoading.value = false
   }
 };
 </script>

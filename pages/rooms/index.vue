@@ -3,6 +3,8 @@ const { $priceCommaFormat } = useNuxtApp();
 const { roomList, getRoomList } = useRoom();
 const { showSuccessAlert, showErrorAlert } = useAlert();
 
+const isLoading = useState('loading');
+
 /**
  * Swiper
  */
@@ -24,9 +26,12 @@ const roomSwiperOptions = {
 };
 
 try {
+  isLoading.value = true;
   await getRoomList();
 } catch (error) {
   showErrorAlert(error);
+} finally {
+  isLoading.value = false;
 }
 </script>
 

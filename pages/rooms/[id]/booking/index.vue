@@ -2,6 +2,7 @@
 definePageMeta({
   middleware: 'auth'
 });
+const isLoading = useState('loading');
 
 const route = useRoute();
 const router = useRouter();
@@ -56,7 +57,6 @@ const boookingInfo = ref({
 });
 
 // 送出訂房訂單
-const isLoading = ref(false);
 const submitButtonRef = ref(null);
 const memberFormRef = ref(null);
 
@@ -71,7 +71,6 @@ const { addOrder } = useOrder();
 const onSubmitReservation = async () => {
   try {
     isLoading.value = true;
-
     const bookingResult = await addOrder(boookingInfo.value);
 
     await navigateTo(

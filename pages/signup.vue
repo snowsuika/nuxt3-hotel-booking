@@ -1,11 +1,12 @@
 <script setup>
 const router = useRouter();
+const isLoading = useState('loading');
 
 definePageMeta({
   layout: 'auth'
 });
 
-const { isEnabled, userSignupObject, onSignup } = useSignup();
+const { userSignupObject, onSignup } = useSignup();
 const { showSuccessAlert, showErrorAlert } = useAlert();
 
 const emailPasswardFormRef = ref(null);
@@ -38,6 +39,7 @@ const preSubmitSignup = async () => {
   }/${selectedDay.value}`;
 
   try {
+    isLoading.value = true;
     await onSignup();
     await showSuccessAlert('註冊成功');
     router.push('/');
@@ -46,6 +48,7 @@ const preSubmitSignup = async () => {
   } finally {
     emailPasswardFormRef.value.resetForm();
     personalInfoFormRef.value.resetForm();
+    isLoading.value = false;
   }
 };
 

@@ -2,17 +2,24 @@
 definePageMeta({
   middleware: 'auth'
 });
+const isLoading = useState('loading');
 
 import { weekDateFormate } from '@/utils/date.js';
 import { getDaysCount } from '@/utils/daysCount.js';
-
 
 const router = useRouter();
 const route = useRoute();
 const orderId = route.query.order_id;
 
 const { orderDetail, getOrderDetail } = useOrder();
-await getOrderDetail(orderId);
+try {
+  isLoading.value = true;
+  await getOrderDetail(orderId);
+} catch (error) {
+  showErrorAlert(error);
+} finally {
+  isLoading.value = false;
+}
 
 const daysCount = computed(() => {
   const { checkInDate, checkOutDate } = orderDetail.value;
